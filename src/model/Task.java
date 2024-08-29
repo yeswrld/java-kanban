@@ -5,13 +5,20 @@ public class Task {
     private String description;
     private Status status;
     private int id;
-    private Type type;
+    //   private Type type;
 
     public Task(String name, String description, Status status, Type type) {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.type = type;
+    }
+
+    public Type getType() {
+        return Type.TASK;
+    }
+
+
+    public Task(String name, String description, Type type) {
     }
 
     public void setId(int id) {
@@ -48,10 +55,9 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Наименование = '" + name +
+        return   "name = '" + name + '\'' +
                 ", description = '" + description + '\'' +
                 ", status = " + status +
-                ", id = " + id +
-                ", type = " + type;
+                ", id = " + id;
     }
 }

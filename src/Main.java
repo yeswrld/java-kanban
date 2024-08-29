@@ -8,11 +8,11 @@ public class Main {
         Subtask boxPacking, catPacking, sayGoodBye;
         Epic gooseGagaga;
         pereezd = new Task("Задача 1", "Описание задачи 1", Status.NEW, Type.TASK);
-        gooseGagaga = new Epic("Эпик 1", "Описание эпика 1", Status.NEW, Type.EPIC);
+        gooseGagaga = new Epic("Эпик 1", "Описание эпика 1", Type.EPIC);
         electr = new Task("Задача 3", "Описание задачи 2", Status.DONE, Type.TASK);
         boxPacking = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.DONE, Type.SUBTASK, 4);
         catPacking = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, Type.SUBTASK, 4);
-        sayGoodBye = new Subtask("Подзадача 3", "Описание подзадачи 3", Status.NEW, Type.SUBTASK, 4);
+        sayGoodBye = new Subtask("Подзадача 3", "Описание подзадачи 3", Status.DONE, Type.SUBTASK, 4);
         duck = new Task("Задача 2", "Описание задачи 2", Status.DONE, Type.TASK);
 
         taskManager.addTaskM(pereezd); // 1
@@ -45,7 +45,7 @@ public class Main {
 
         System.out.println("3a. Получение списка всех подзадач определённого эпика.");
         //получение списка подзадач
-        System.out.println(taskManager.printOnEpicId(4));
+        System.out.println(taskManager.returnSubtasksOnEpicId(4));
         System.out.println();
 
 
@@ -55,21 +55,21 @@ public class Main {
         epicUpd.setStatus(Status.IN_PROGRESS);
         taskManager.updateEpic(epicUpd);
         System.out.println(taskManager.getEpicId(4));
-        System.out.println(taskManager.printOnEpicId(4));
+        System.out.println(taskManager.returnSubtasksOnEpicId(4));
 
         System.out.println("Смена статуса подзадачи");
         Subtask subtaskUpd = taskManager.getSubTaskId(5);
         subtaskUpd.setStatus(Status.IN_PROGRESS);
         System.out.println(taskManager.getSubTaskId(5));
         System.out.println(taskManager.getEpicId(4));
-        System.out.println(taskManager.printOnEpicId(4));
+        System.out.println(taskManager.returnSubtasksOnEpicId(4));
         subtaskUpd = taskManager.getSubTaskId(6);
         subtaskUpd.setStatus(Status.DONE);
         taskManager.updateSubstask(subtaskUpd);
         System.out.println();
         System.out.println(taskManager.getSubTaskId(5));
         System.out.println(taskManager.getEpicId(4));
-        System.out.println(taskManager.printOnEpicId(4));
+        System.out.println(taskManager.returnSubtasksOnEpicId(4));
         System.out.println();
 
         System.out.println("Смена наименования задачи");
@@ -89,7 +89,10 @@ public class Main {
         System.out.println();
 
         System.out.println("2b. Удаление всех задач.");
-        taskManager.deleteAll();
+        taskManager.deleteTasks();
+        taskManager.deleteSubtasks();
+        taskManager.deleteEpics();
+        System.out.println(epicUpd.getSubtaskIdList());
         System.out.println("Задачи: " + taskManager.printTask());
         System.out.println("Подзадачи: " + taskManager.printSubtask());
         System.out.println("Эпики: " + taskManager.printEpic());

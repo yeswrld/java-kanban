@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class Epic extends Task {
     private ArrayList<Integer> subtaskIdList = new ArrayList<>();
 
-    public Epic(String name, String description, Status status, Type type) {
-        super(name, description, status, type);
+    public Epic(String name, String description, Type type) {
+        super(name, description, Status.NEW, type);
     }
 
-    public void addSubtaskId(int subTaskId){
+    public void addSubtaskId(int subTaskId) {
         subtaskIdList.add(subTaskId);
     }
 
@@ -17,5 +17,16 @@ public class Epic extends Task {
         return subtaskIdList;
     }
 
+    public void deleteEpicSubtask(Integer idSubtask){
+        subtaskIdList.remove(idSubtask);
+    }
 
+    public void clearSubtaskMapIdList (){
+        subtaskIdList.clear();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.EPIC;
+    }
 }
