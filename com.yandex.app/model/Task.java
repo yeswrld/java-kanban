@@ -5,9 +5,8 @@ public class Task {
     private String description;
     private Status status;
     private int id;
-    //   private Type type;
 
-    public Task(String name, String description, Status status, Type type) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -15,10 +14,6 @@ public class Task {
 
     public Type getType() {
         return Type.TASK;
-    }
-
-
-    public Task(String name, String description, Type type) {
     }
 
     public void setId(int id) {

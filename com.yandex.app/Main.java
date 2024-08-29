@@ -7,13 +7,13 @@ public class Main {
         Task pereezd, duck, electr;
         Subtask boxPacking, catPacking, sayGoodBye;
         Epic gooseGagaga;
-        pereezd = new Task("Задача 1", "Описание задачи 1", Status.NEW, Type.TASK);
-        gooseGagaga = new Epic("Эпик 1", "Описание эпика 1", Type.EPIC);
-        electr = new Task("Задача 3", "Описание задачи 2", Status.DONE, Type.TASK);
-        boxPacking = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.DONE, Type.SUBTASK, 4);
-        catPacking = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, Type.SUBTASK, 4);
-        sayGoodBye = new Subtask("Подзадача 3", "Описание подзадачи 3", Status.DONE, Type.SUBTASK, 4);
-        duck = new Task("Задача 2", "Описание задачи 2", Status.DONE, Type.TASK);
+        pereezd = new Task("Задача 1", "Описание задачи 1", Status.NEW);
+        gooseGagaga = new Epic("Эпик 1", "Описание эпика 1");
+        electr = new Task("Задача 3", "Описание задачи 2", Status.DONE);
+        boxPacking = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.DONE,  4);
+        catPacking = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.DONE,  4);
+        sayGoodBye = new Subtask("Подзадача 3", "Описание подзадачи 3", Status.DONE,  4);
+        duck = new Task("Задача 2", "Описание задачи 2", Status.DONE);
 
         taskManager.addTaskM(pereezd); // 1
         taskManager.addTaskM(duck); // 2
@@ -73,6 +73,7 @@ public class Main {
         System.out.println();
 
         System.out.println("Смена наименования задачи");
+        System.out.println(taskManager.getTaskId(1));
         Task nameUpd = taskManager.getTaskId(1);
         nameUpd.setName("Возвращение в старый дом");
         taskManager.updateTask(nameUpd);
