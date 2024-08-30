@@ -1,4 +1,4 @@
-package model;
+package com.tasktracker.app.model;
 
 import java.util.ArrayList;
 

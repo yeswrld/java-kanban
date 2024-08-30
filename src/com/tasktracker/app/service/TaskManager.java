@@ -1,9 +1,9 @@
-package service;
+package com.tasktracker.app.service;
 
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
+import com.tasktracker.app.model.Epic;
+import com.tasktracker.app.model.Status;
+import com.tasktracker.app.model.Subtask;
+import com.tasktracker.app.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +110,6 @@ public class TaskManager {
     private void updateEpicStatus(int epicId) {
         final Epic epic = epicM.get(epicId);
         ArrayList<Integer> subTaskList = epic.getSubtaskIdList();
-        ArrayList<Subtask> subTaskArrayList = new ArrayList<>();
         boolean isDone = true;
         boolean isNew = true;
 

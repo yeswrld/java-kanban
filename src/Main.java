@@ -1,5 +1,5 @@
-import service.TaskManager;
-import model.*;
+import com.tasktracker.app.service.TaskManager;
+import com.tasktracker.app.model.*;
 
 public class Main {
     public static void main(String[] args) {
