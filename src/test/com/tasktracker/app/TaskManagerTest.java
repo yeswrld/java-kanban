@@ -2,16 +2,14 @@
 так как изначально в моем варианте не получится создать подзадачи с ИД эпиков (будет ошибка).
 Поэтому я попробовал сменить ИД подзадачи на ИД эпика, и наоборот во втором случае, а потом сравнить
 содержимое по этим ИД*/
-package test;
+package test.com.tasktracker.app;
 
 import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
 import com.tasktracker.app.service.InMemoryTaskManager;
-import com.tasktracker.app.service.TaskManager;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.tasktracker.app.service.Managers.getDefault;
@@ -60,7 +58,7 @@ class TaskManagerTest {
         manager.addTaskM(task1);
         manager.addTaskM(task2);
         task2.setId(1);
-        System.out.println(manager.printTask());
+        System.out.println(manager.getTask());
         Assertions.assertNotEquals(task1, task2);
     }
 
@@ -139,7 +137,7 @@ class TaskManagerTest {
 
         System.out.println(manager.printEpic());
         System.out.println(manager.printSubtask());
-        System.out.println(manager.printTask());
+        System.out.println(manager.getTask());
     }
 
 }

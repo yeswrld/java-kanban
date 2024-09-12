@@ -2,14 +2,30 @@ package com.tasktracker.app.service;
 
 import com.tasktracker.app.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final Map<Integer, Node> requestHistory = new HashMap<>();
-    private Node head;
-    private Node tail;
+
+    private List<Task> history = new ArrayList<>(10);
 
     @Override
+    public void add(Task task) {
+        if (history != null && history.size() != 10) {
+            history.add(task);
+        }else {
+            history.removeFirst();
+            history.add(task);
+        }
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return history;
+    }
+
+}
+  /*  @Override
     public void add(Task task) {
         if (requestHistory.containsKey(task.getId())) {
             remove(task.getId());
@@ -17,16 +33,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         linkLast(task);
     }
 
-    @Override
-    public List<Task> getHistory() {
-        List<Task> history = new ArrayList<>();
-        Node node = head;
-        while (node != null) {
-            history.add(node.getTask());
-            node = node.getNext();
-        }
-        return history;
-    }
+
 
     @Override
     public void remove(int counter) {
@@ -127,4 +134,4 @@ public class InMemoryHistoryManager implements HistoryManager {
             return Objects.hash(task, next, previous);
         }
     }
-}
+}*/

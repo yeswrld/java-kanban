@@ -15,7 +15,7 @@ public interface TaskManager {
 
     int addSubTaskM(Subtask subtask);
 
-    ArrayList<Task> printTask();
+    List<Task> getTask();
 
     ArrayList<Task> printSubtask();
 
@@ -52,7 +52,5 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    List<Task> getSubTaskId();
-
-    List<Task> getTaskId();
+    void add(Task task);
 }

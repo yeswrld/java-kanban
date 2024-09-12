@@ -2,9 +2,9 @@ package com.tasktracker.app.service;
 
 public class Managers {
     public static InMemoryTaskManager getDefault(){
-        return new InMemoryTaskManager();
+        return new InMemoryTaskManager(getDefaultHistory());
     }
     public static HistoryManager getDefaultHistory(){
-        return (HistoryManager) new InMemoryHistoryManager();
+        return new InMemoryHistoryManager();
     }
 }

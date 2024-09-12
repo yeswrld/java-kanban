@@ -8,21 +8,22 @@ import com.tasktracker.app.model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int counter = 0;
-    private final HashMap<Integer, Task> taskM = new HashMap<>();
-    private final HashMap<Integer, Epic> epicM = new HashMap<>();
-    private final HashMap<Integer, Subtask> subTaskM = new HashMap<>();
+    private int counter = 0;
+    private final Map<Integer, Task> taskM = new HashMap<>();
+    private final Map<Integer, Epic> epicM = new HashMap<>();
+    private final Map<Integer, Subtask> subTaskM = new HashMap<>();
     private final HistoryManager historyManager;
 
-    public InMemoryTaskManager() {
-        historyManager = Managers.getDefaultHistory();
-        counter = 0;
+
+    public InMemoryTaskManager(HistoryManager historyManager) {
+        this.historyManager = historyManager;
     }
 
-    int generateCounter() {
+    private int generateCounter() {
         return ++counter;
     }
 
@@ -47,19 +48,17 @@ public class InMemoryTaskManager implements TaskManager {
         int subTaskCount = generateCounter();
         subtask.setId(subTaskCount);
         Epic epic = epicM.get(subtask.getEpicId());
-        subTaskM.put(subTaskCount, subtask);
         if (epic != null) {
             subTaskM.put(subTaskCount, subtask);
             epic.addSubtaskId(subTaskCount);
-            epicM.get(subTaskCount).addSubtaskId(subTaskCount);
             updateEpicStatus(subTaskCount);
             return subTaskCount;
-        }
-        return generateCounter();
+        } else subTaskM.put(subTaskCount, subtask);
+        return subTaskCount;
     }
 
     @Override
-    public ArrayList<Task> printTask() {
+    public List<Task> getTask() {
         if (taskM.isEmpty()) {
             System.out.println("Cписок задач пуст");
         }
@@ -84,19 +83,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskId(int id) {
-        if (taskM.get(id) != null) {
-            historyManager.add(taskM.get(id));
+        final Task task = taskM.get(id);
+        if (task != null) {
+            historyManager.add(task);
         }
         return taskM.get(id);
     }
 
     @Override
     public Subtask getSubTaskId(int id) {
+        historyManager.add(subTaskM.get(id));
         return subTaskM.get(id);
     }
 
     @Override
     public Epic getEpicId(int id) {
+        historyManager.add(epicM.get(id));
         return epicM.get(id);
     }
 
@@ -104,8 +106,8 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Subtask> returnSubtasksOnEpicId(int epicId) {
         ArrayList<Integer> subtaskIdList = epicM.get(epicId).getSubtaskIdList();
         ArrayList<Subtask> subtaskArrayList = new ArrayList<>();
-        for (int i : subtaskIdList) {
-            subtaskArrayList.add(subTaskM.get(i));
+        for (int subtaskId : subtaskIdList) {
+            subtaskArrayList.add(subTaskM.get(subtaskId));
         }
         return subtaskArrayList;
     }
@@ -168,9 +170,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) {
         if (epic != null && epicM.containsKey(epic.getId())) {
-            Epic epic1 = epicM.get(epic.getId());
-            epic1.setName(epic.getName());
-            epic1.setDescription(epic.getDescription());
+            Epic savedEpic = epicM.get(epic.getId());
+            savedEpic.setName(epic.getName());
+            savedEpic.setDescription(epic.getDescription());
         }
     }
 
@@ -215,14 +217,12 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    @Override
-    public List<Task> getSubTaskId() {
-        return new ArrayList<>(subTaskM.values());
-    }
 
     @Override
-    public List<Task> getTaskId() {
-        return new ArrayList<>(taskM.values());
+    public void add(Task task) {
+        InMemoryHistoryManager memoryHistoryManager = new InMemoryHistoryManager();
+        memoryHistoryManager.add(task);
     }
+
 
 }

@@ -1,4 +1,4 @@
-package test;
+package test.com.tasktracker.app;
 
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Task;
@@ -20,13 +20,13 @@ class InMemoryHistoryManagerTest {
     @Test
     void checkSizeOfHistory() {
         Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        final int requestSize = 1;
-        final int checkSize = 15;
+        final int requestSize = 10;
+        final int checkSize = 10;
         for (int i = 0; i <= checkSize ; i++) {
             historyManager.add(task);
         }
         List<Task> listOfHistory = historyManager.getHistory();
-        Assertions.assertEquals(requestSize, listOfHistory.size(), "Ограничение не работает");
+        Assertions.assertEquals(requestSize, historyManager.getHistory().size(), "Ограничение не работает");
     }
 
     @Test
