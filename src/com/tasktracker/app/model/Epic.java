@@ -1,9 +1,10 @@
 package com.tasktracker.app.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskIdList = new ArrayList<>();
+    final private List<Integer> subtaskIdList = new ArrayList<>();
 
     public Epic(String name, String description ) {
         super(name, description, Status.NEW);
@@ -13,7 +14,7 @@ public class Epic extends Task {
         subtaskIdList.add(subTaskId);
     }
 
-    public ArrayList<Integer> getSubtaskIdList() {
+    public List<Integer> getSubtaskIdList() {
         return subtaskIdList;
     }
 

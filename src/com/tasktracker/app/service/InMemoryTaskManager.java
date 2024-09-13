@@ -23,9 +23,6 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = historyManager;
     }
 
-    private int generateCounter() {
-        return ++counter;
-    }
 
     @Override
     public int addTaskM(Task task) {
@@ -51,14 +48,14 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             subTaskM.put(subTaskCount, subtask);
             epic.addSubtaskId(subTaskCount);
-            updateEpicStatus(subTaskCount);
+            updateEpicStatus(epic.getId());
             return subTaskCount;
-        } else subTaskM.put(subTaskCount, subtask);
+        }
         return subTaskCount;
     }
 
     @Override
-    public List<Task> getTask() {
+    public List<Task> getTasks() {
         if (taskM.isEmpty()) {
             System.out.println("Cписок задач пуст");
         }
@@ -66,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> printSubtask() {
+    public List<Task> printSubtask() {
         if (subTaskM.isEmpty()) {
             System.out.println("Список подзадач пуст");
         }
@@ -74,7 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> printEpic() {
+    public List<Task> printEpic() {
         if (epicM.isEmpty()) {
             System.out.println("Список эпиков пуст");
         }
@@ -92,19 +89,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubTaskId(int id) {
-        historyManager.add(subTaskM.get(id));
+        final Subtask subtask = subTaskM.get(id);
+        if (subtask != null) {
+            historyManager.add(subtask);
+        }
         return subTaskM.get(id);
     }
 
     @Override
     public Epic getEpicId(int id) {
-        historyManager.add(epicM.get(id));
+        final Epic epic = epicM.get(id);
+        if (epic != null) {
+            historyManager.add(epic);
+        }
         return epicM.get(id);
     }
 
     @Override
     public ArrayList<Subtask> returnSubtasksOnEpicId(int epicId) {
-        ArrayList<Integer> subtaskIdList = epicM.get(epicId).getSubtaskIdList();
+        List<Integer> subtaskIdList = epicM.get(epicId).getSubtaskIdList();
         ArrayList<Subtask> subtaskArrayList = new ArrayList<>();
         for (int subtaskId : subtaskIdList) {
             subtaskArrayList.add(subTaskM.get(subtaskId));
@@ -133,39 +136,6 @@ public class InMemoryTaskManager implements TaskManager {
         epicM.remove(id);
     }
 
-    // обновление статуса эпика
-    @Override
-    public void updateEpicStatus(int epicId) {
-        final Epic epic = epicM.get(epicId);
-        ArrayList<Integer> subTaskList = epic.getSubtaskIdList();
-        boolean isDone = true;
-        boolean isNew = true;
-
-        if (subTaskList.isEmpty()) {
-            epicM.get(epicId).setStatus(Status.NEW);
-        } else {
-            for (int subtaskId : subTaskList) {
-                final Status status = subTaskM.get(subtaskId).getStatus();
-                if (!status.equals(Status.DONE)) {
-                    isDone = false;
-                }
-                if (!status.equals(Status.NEW)) {
-                    isNew = false;
-                }
-                if (!isDone && !isNew) {
-                    break;
-                }
-
-            }
-            if (isDone) {
-                epicM.get(epicId).setStatus(Status.DONE);
-            } else if (isNew) {
-                epicM.get(epicId).setStatus(Status.NEW);
-            } else {
-                epicM.get(epicId).setStatus(Status.IN_PROGRESS);
-            }
-        }
-    }
 
     @Override
     public void updateEpic(Epic epic) {
@@ -217,12 +187,40 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-
-    @Override
-    public void add(Task task) {
-        InMemoryHistoryManager memoryHistoryManager = new InMemoryHistoryManager();
-        memoryHistoryManager.add(task);
+    private int generateCounter() {
+        return ++counter;
     }
 
+    // обновление статуса эпика
+    private void updateEpicStatus(int epicId) {
+        final Epic epic = epicM.get(epicId);
+        List<Integer> subTaskList = epic.getSubtaskIdList();
+        boolean isDone = true;
+        boolean isNew = true;
 
+        if (subTaskList.isEmpty()) {
+            epicM.get(epicId).setStatus(Status.NEW);
+        } else {
+            for (int subtaskId : subTaskList) {
+                final Status status = subTaskM.get(subtaskId).getStatus();
+                if (!status.equals(Status.DONE)) {
+                    isDone = false;
+                }
+                if (!status.equals(Status.NEW)) {
+                    isNew = false;
+                }
+                if (!isDone && !isNew) {
+                    break;
+                }
+
+            }
+            if (isDone) {
+                epicM.get(epicId).setStatus(Status.DONE);
+            } else if (isNew) {
+                epicM.get(epicId).setStatus(Status.NEW);
+            } else {
+                epicM.get(epicId).setStatus(Status.IN_PROGRESS);
+            }
+        }
+    }
 }

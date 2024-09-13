@@ -15,11 +15,11 @@ public interface TaskManager {
 
     int addSubTaskM(Subtask subtask);
 
-    List<Task> getTask();
+    List<Task> getTasks();
 
-    ArrayList<Task> printSubtask();
+    List<Task> printSubtask();
 
-    ArrayList<Task> printEpic();
+    List<Task> printEpic();
 
     Task getTaskId(int id);
 
@@ -35,9 +35,6 @@ public interface TaskManager {
 
     void removeEpicOnId(int id);
 
-    // обновление статуса эпика
-    void updateEpicStatus(int epicId);
-
     void updateEpic(Epic epic);
 
     void updateSubstask(Subtask subtask);
@@ -52,5 +49,4 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    void add(Task task);
 }

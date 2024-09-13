@@ -1,21 +1,23 @@
-package test.com.tasktracker.app;
+package com.tasktracker.app.service;
 
 import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
-import com.tasktracker.app.service.InMemoryTaskManager;
-import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 class InMemoryTaskManagerTest {
     private InMemoryTaskManager taskManager;
 
     @BeforeEach
-    void addTask() {
+    void taskManagerInit (){
         taskManager = Managers.getDefault();
+    }
+
+    void addTask() {
         Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW);
         Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE);
         Task task3 = new Task("Задача 3", "Описание задачи 3", Status.DONE);
@@ -29,7 +31,7 @@ class InMemoryTaskManagerTest {
         Task task11 = new Task("Задача 11", "Описание задачи 11", Status.DONE);
         Task task12 = new Task("Задача 12", "Описание задачи 12", Status.DONE);
         Task task13 = new Task("Задача 13", "Описание задачи 13", Status.DONE);
-        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.DONE, 1);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
         taskManager.addTaskM(task1);
         taskManager.addTaskM(task2);
@@ -44,28 +46,47 @@ class InMemoryTaskManagerTest {
         taskManager.addTaskM(task11);
         taskManager.addTaskM(task12);
         taskManager.addTaskM(task13);
-        taskManager.addSubTaskM(subtask2);
         taskManager.addEpicM(epic1);
+        taskManager.addSubTaskM(subtask2);
     }
 
     @Test
-    void taskManagerNotWork() {
-        Assertions.assertNotNull(taskManager, "Не работает");
+    void taskManagerFilling() { //проверка добавления задач
+        addTask();
+        Assertions.assertNotNull(taskManager, "Трекер задач пустой");
+    }
+
+    @Test
+    void checkSizeOfHistoryLess10() { //проверка размерности истории просмотров, и что история просмотров не завышает указанный размер
+        Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
+        final int checkSize = 12;
+        final int APPEAL_TO_HISTORY = 15; //для создания запросов к истории просмотров
+        for (int i = 0; i < checkSize; i++) {
+            taskManager.addTaskM(task);
+        }
+        for (int i = 0; i <= APPEAL_TO_HISTORY; i++) {
+            taskManager.getTaskId(i);
+        }
+        final int historySize = taskManager.getHistory().size();
+        Assertions.assertTrue(checkSize <= historySize, "Проверяемый размер больше 10, т.к. " +
+                "проверяемых значений - " + checkSize);
     }
 
     @Test
     void getTaskByIdAndHistoryRewriting() { //проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
+        addTask();
         for (int i = 1; i < 9; i++) {
             taskManager.getTaskId(i);
         }
-        taskManager.getSubTaskId(14);
-        taskManager.getEpicId(15);
+        taskManager.getEpicId(14);
+        taskManager.getSubTaskId(15);
         taskManager.getTaskId(7);
-        taskManager.getSubTaskId(14);
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+        taskManager.getEpicId(14);
+        for (int i = 0; i < 10; i++) {
             System.out.println("Последняя задача " + (i + 1) + " - " + " " + taskManager.getHistory().get(i));
         }
 
     }
+
 
 }
