@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    final private List<Integer> subtaskIdList = new ArrayList<>();
+    private final List<Integer> subtaskIdList = new ArrayList<>();
 
-    public Epic(String name, String description ) {
+    public Epic(String name, String description) {
         super(name, description, Status.NEW);
     }
 
@@ -18,11 +18,11 @@ public class Epic extends Task {
         return subtaskIdList;
     }
 
-    public void deleteEpicSubtask(Integer idSubtask){
+    public void deleteEpicSubtask(Integer idSubtask) {
         subtaskIdList.remove(idSubtask);
     }
 
-    public void clearSubtaskMapIdList (){
+    public void clearSubtaskMapIdList() {
         subtaskIdList.clear();
     }
 

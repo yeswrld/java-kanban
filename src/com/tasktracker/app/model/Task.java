@@ -50,7 +50,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return   "name = '" + name + '\'' +
+        return "name = '" + name + '\'' +
                 ", description = '" + description + '\'' +
                 ", status = " + status +
                 ", id = " + id;

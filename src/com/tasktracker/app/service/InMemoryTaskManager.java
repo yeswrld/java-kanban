@@ -63,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> printSubtask() {
+    public List<Task> getSubtasks() {
         if (subTaskM.isEmpty()) {
             System.out.println("Список подзадач пуст");
         }
@@ -71,7 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> printEpic() {
+    public List<Task> getEpics() {
         if (epicM.isEmpty()) {
             System.out.println("Список эпиков пуст");
         }
@@ -84,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             historyManager.add(task);
         }
-        return taskM.get(id);
+        return task;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask != null) {
             historyManager.add(subtask);
         }
-        return subTaskM.get(id);
+        return subtask;
     }
 
     @Override
@@ -102,11 +102,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             historyManager.add(epic);
         }
-        return epicM.get(id);
+        return epic;
     }
 
     @Override
-    public ArrayList<Subtask> returnSubtasksOnEpicId(int epicId) {
+    public List<Subtask> returnSubtasksOnEpicId(int epicId) {
         List<Integer> subtaskIdList = epicM.get(epicId).getSubtaskIdList();
         ArrayList<Subtask> subtaskArrayList = new ArrayList<>();
         for (int subtaskId : subtaskIdList) {

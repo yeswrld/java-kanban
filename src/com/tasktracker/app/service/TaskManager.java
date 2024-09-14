@@ -4,7 +4,6 @@ import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -17,9 +16,9 @@ public interface TaskManager {
 
     List<Task> getTasks();
 
-    List<Task> printSubtask();
+    List<Task> getSubtasks();
 
-    List<Task> printEpic();
+    List<Task> getEpics();
 
     Task getTaskId(int id);
 
@@ -27,7 +26,7 @@ public interface TaskManager {
 
     Epic getEpicId(int id);
 
-    ArrayList<Subtask> returnSubtasksOnEpicId(int epicId);
+    List<Subtask> returnSubtasksOnEpicId(int epicId);
 
     void removeTaskOnId(int id);
 

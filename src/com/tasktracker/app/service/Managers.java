@@ -1,10 +1,11 @@
 package com.tasktracker.app.service;
 
 public class Managers {
-    public static InMemoryTaskManager getDefault(){
+    public static InMemoryTaskManager getDefault() {
         return new InMemoryTaskManager(getDefaultHistory());
     }
-    public static HistoryManager getDefaultHistory(){
+
+    public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 }
