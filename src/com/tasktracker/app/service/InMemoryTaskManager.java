@@ -130,8 +130,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeEpicOnId(int id) {
-        for (Integer ID : epicM.get(id).getSubtaskIdList()) {
-            subTaskM.remove(ID);
+        for (Integer ids : epicM.get(id).getSubtaskIdList()) {
+            subTaskM.remove(ids);
         }
         epicM.remove(id);
     }
