@@ -1,9 +1,11 @@
-package com.tasktracker.app.service;
+package service;
 
 import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.InMemoryTaskManager;
+import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

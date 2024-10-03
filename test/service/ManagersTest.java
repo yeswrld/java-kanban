@@ -1,5 +1,6 @@
-package com.tasktracker.app.service;
+package service;
 
+import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

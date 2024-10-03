@@ -1,7 +1,9 @@
-package com.tasktracker.app.service;
+package service;
 
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.HistoryManager;
+import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
