@@ -62,7 +62,7 @@ class InMemoryTaskManagerTest {
     @Test
     void checkSizeOfHistoryLess10() { //проверка размерности истории просмотров, и что история просмотров не завышает указанный размер
         Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        final int checkSize = 9;
+        final int checkSize = 10;
         final int APPEAL_TO_HISTORY = 15; //для создания запросов к истории просмотров
         for (int i = 0; i < checkSize; i++) {
             taskManager.addTaskM(task);
@@ -71,25 +71,28 @@ class InMemoryTaskManagerTest {
             taskManager.getTaskId(i);
         }
         final int historySize = taskManager.getHistory().size();
+        System.out.println(taskManager.getHistory().size());
         Assertions.assertTrue(checkSize <= historySize, "Проверяемый размер больше 10, т.к. " +
                 "проверяемых значений - " + checkSize);
     }
 
     @Test
     @DisplayName("Проверяем заполняемость истории")
-    void getTaskByIdAndHistoryRewriting() { //проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
+    void getTaskByIdAndHistoryRewriting() { //проверяем, что после просмотра задач в истории остаётся только последний просмотр
         addTask();
-        for (int i = 1; i < 9; i++) {
-            taskManager.getTaskId(i);
-        }
+        taskManager.getTaskId(1);
+        taskManager.getTaskId(2);
+        taskManager.getEpicId(14);
+        taskManager.getTaskId(1);
+        taskManager.getSubTaskId(15);
+        taskManager.getTaskId(2);
         taskManager.getEpicId(14);
         taskManager.getSubTaskId(15);
-        taskManager.getTaskId(7);
-        taskManager.getEpicId(14);
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Последняя задача " + (i + 1) + " - " + " " + taskManager.getHistory().get(i));
+        taskManager.getTaskId(3);
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
         }
-        System.out.println();
+
     }
 
     @DisplayName("Проверяем равенство задач если равен их ИД")
