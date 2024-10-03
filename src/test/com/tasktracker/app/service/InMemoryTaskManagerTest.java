@@ -58,23 +58,6 @@ class InMemoryTaskManagerTest {
         Assertions.assertNotNull(taskManager, "Трекер задач пустой");
     }
 
-    @DisplayName("Проверяем что история просмотров вмещает только 10 записей")
-    @Test
-    void checkSizeOfHistoryLess10() { //проверка размерности истории просмотров, и что история просмотров не завышает указанный размер
-        Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        final int checkSize = 10;
-        final int APPEAL_TO_HISTORY = 15; //для создания запросов к истории просмотров
-        for (int i = 0; i < checkSize; i++) {
-            taskManager.addTaskM(task);
-        }
-        for (int i = 0; i <= APPEAL_TO_HISTORY; i++) {
-            taskManager.getTaskId(i);
-        }
-        final int historySize = taskManager.getHistory().size();
-        System.out.println(taskManager.getHistory().size());
-        Assertions.assertTrue(checkSize <= historySize, "Проверяемый размер больше 10, т.к. " +
-                "проверяемых значений - " + checkSize);
-    }
 
     @Test
     @DisplayName("Проверяем заполняемость истории")
