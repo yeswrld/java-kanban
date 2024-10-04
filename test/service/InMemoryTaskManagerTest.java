@@ -35,6 +35,8 @@ class InMemoryTaskManagerTest {
         Task task12 = new Task("Задача 12", "Описание задачи 12", Status.DONE);
         Task task13 = new Task("Задача 13", "Описание задачи 13", Status.DONE);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
+        Subtask subtask3 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
+        Subtask subtask4 = new Subtask("Подзадача 4", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
         taskManager.addTaskM(task1);
         taskManager.addTaskM(task2);
@@ -51,6 +53,8 @@ class InMemoryTaskManagerTest {
         taskManager.addTaskM(task13);
         taskManager.addEpicM(epic1);
         taskManager.addSubTaskM(subtask2);
+        taskManager.addSubTaskM(subtask3);
+        taskManager.addSubTaskM(subtask4);
     }
 
     @DisplayName("Проверяем заполняемость трекера задач")
@@ -72,8 +76,8 @@ class InMemoryTaskManagerTest {
         taskManager.getSubTaskId(15);
         taskManager.getTaskId(2);
         taskManager.getEpicId(14);
-        taskManager.getSubTaskId(15);
         taskManager.getTaskId(3);
+        taskManager.removeEpicOnId(14);
         for (int i = 0; i < taskManager.getHistory().size(); i++) {
             System.out.println(taskManager.getHistory().get(i));
         }
