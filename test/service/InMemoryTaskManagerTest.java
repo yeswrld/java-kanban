@@ -4,6 +4,8 @@ import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.HistoryManager;
+import com.tasktracker.app.service.InMemoryHistoryManager;
 import com.tasktracker.app.service.InMemoryTaskManager;
 import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
@@ -67,21 +69,53 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("Проверяем заполняемость истории")
-    void getTaskByIdAndHistoryRewriting() { //проверяем, что после просмотра задач в истории остаётся только последний просмотр
+    void getTaskByIdAndHistoryRewriting() { //проверяем работу с удалением по ИД эпиков, тасков, или эпиков с его сабтасками
         addTask();
+        System.out.println();
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        System.out.println();
+        System.out.println("Полная история просмотров, с порядком следования задач при записи и без дубликатов");
         taskManager.getTaskId(1);
         taskManager.getTaskId(2);
-        taskManager.getEpicId(14);
-        taskManager.getTaskId(1);
         taskManager.getSubTaskId(15);
-        taskManager.getTaskId(2);
+        taskManager.getSubTaskId(16);
+        taskManager.getSubTaskId(1);
         taskManager.getEpicId(14);
+        taskManager.getTaskId(2);
         taskManager.getTaskId(3);
-        taskManager.removeEpicOnId(14);
+        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
         for (int i = 0; i < taskManager.getHistory().size(); i++) {
             System.out.println(taskManager.getHistory().get(i));
         }
-
+        System.out.println();
+        System.out.println("Размерность истории просмотров после удаления Таска, и Сабтаска");
+        taskManager.removeTaskOnId(1);
+        taskManager.removeSubTaskOnId(15);
+        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("Размерность истории просмотров после удаления эпика");
+        taskManager.removeEpicOnId(14);
+        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("Размерность истории просмотров после удаления последних записей");
+        taskManager.removeTaskOnId(2);
+        taskManager.removeTaskOnId(3);
+        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
     }
 
     @DisplayName("Проверяем равенство задач если равен их ИД")

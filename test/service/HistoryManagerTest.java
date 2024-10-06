@@ -55,5 +55,6 @@ class HistoryManagerTest {
         for (int i = 0; i < historyManager.getTasks().size(); i++) {
             System.out.println(historyManager.getTasks().get(i));
         }
+
     }
 }
