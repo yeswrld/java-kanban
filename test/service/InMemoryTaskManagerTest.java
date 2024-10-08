@@ -4,8 +4,6 @@ import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
-import com.tasktracker.app.service.HistoryManager;
-import com.tasktracker.app.service.InMemoryHistoryManager;
 import com.tasktracker.app.service.InMemoryTaskManager;
 import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
@@ -205,4 +203,54 @@ class InMemoryTaskManagerTest {
             System.out.println(taskManager.getSubtasks().get(i));
         }
     }
+
+    @Test
+    @DisplayName("Проверяем чистку истории после удаления всех задач одного типа")
+    void historyCleaningAfterDelAllTypes() {
+        addTask();
+        System.out.println();
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        System.out.println();
+        taskManager.addEpicM(new Epic("Эпик 2", "Для проверки"));
+        taskManager.getTaskId(1);
+        taskManager.getTaskId(2);
+        taskManager.getSubTaskId(15);
+        taskManager.getSubTaskId(16);
+        taskManager.getSubTaskId(1);
+        taskManager.getEpicId(14);
+        taskManager.getTaskId(2);
+        taskManager.getTaskId(3);
+        taskManager.getEpicId(18);
+
+        System.out.println("История просмотров до удаления");
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        taskManager.deleteTasks();
+        System.out.println();
+        System.out.println("История просмотров после удаления тасков");
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("История просмотров после удаления сабтасков ");
+        taskManager.deleteSubtasks();
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("История просмотров после удаления эпиков ");
+        taskManager.deleteEpics();
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        System.out.println();
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        System.out.println();
+    }
+
 }

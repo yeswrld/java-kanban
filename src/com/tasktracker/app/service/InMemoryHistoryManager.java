@@ -13,16 +13,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (history.containsKey(task.getId())) { // для удаления старой записи из истории
-            remove(task.getId());
-        }
+        remove(task.getId());
         linkLast(task);
     }
 
     public void remove(int id) {
-        if (history.containsKey(id)) {
             removeNode(history.remove(id));
-        }
     }
 
 
@@ -39,6 +35,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(Node node) {
+        if (node == null) {
+            return;
+        }
         Node prev = node.previous;
         Node next = node.next;
         if (node == first && last == node) {
