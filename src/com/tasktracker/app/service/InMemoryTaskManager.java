@@ -118,6 +118,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTaskOnId(int id) {
         taskM.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
@@ -126,13 +127,18 @@ public class InMemoryTaskManager implements TaskManager {
         epicM.get(epicId).deleteEpicSubtask(id);
         subTaskM.remove(id);
         updateEpicStatus(epicId);
+        historyManager.remove(id);
     }
 
     @Override
     public void removeEpicOnId(int id) {
-        for (Integer ID : epicM.get(id).getSubtaskIdList()) {
-            subTaskM.remove(ID);
+        final Epic epic = epicM.get(id);
+        historyManager.remove(id);
+        for (Integer subtaskId : epic.getSubtaskIdList()) {
+            historyManager.remove(subtaskId);
+            subTaskM.remove(subtaskId);
         }
+        subTaskM.remove(epic);
         epicM.remove(id);
     }
 
@@ -164,6 +170,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubtasks() {
+        for (int subtaskForDelete : subTaskM.keySet()) {
+            historyManager.remove(subtaskForDelete);
+        }
         subTaskM.clear();
         for (Epic epic : epicM.values()) {
             epic.clearSubtaskMapIdList();
@@ -173,18 +182,27 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTasks() {
+        for (int taskForDelete : taskM.keySet()) {
+            historyManager.remove(taskForDelete);
+        }
         taskM.clear();
     }
 
     @Override
     public void deleteEpics() {
+        for (int epicForDelete : epicM.keySet()) {
+            historyManager.remove(epicForDelete);
+        }
+        for (int subtaskForDelete : subTaskM.keySet()) {
+            historyManager.remove(subtaskForDelete);
+        }
         epicM.clear();
         subTaskM.clear();
     }
 
     @Override
     public List<Task> getHistory() {
-        return historyManager.getHistory();
+        return historyManager.getTasks();
     }
 
     private int generateCounter() {
@@ -223,4 +241,5 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
     }
+
 }

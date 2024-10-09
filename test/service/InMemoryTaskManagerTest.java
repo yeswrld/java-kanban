@@ -1,9 +1,11 @@
-package com.tasktracker.app.service;
+package service;
 
 import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.InMemoryTaskManager;
+import com.tasktracker.app.service.Managers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +35,8 @@ class InMemoryTaskManagerTest {
         Task task12 = new Task("Задача 12", "Описание задачи 12", Status.DONE);
         Task task13 = new Task("Задача 13", "Описание задачи 13", Status.DONE);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
+        Subtask subtask3 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
+        Subtask subtask4 = new Subtask("Подзадача 4", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
         taskManager.addTaskM(task1);
         taskManager.addTaskM(task2);
@@ -49,6 +53,8 @@ class InMemoryTaskManagerTest {
         taskManager.addTaskM(task13);
         taskManager.addEpicM(epic1);
         taskManager.addSubTaskM(subtask2);
+        taskManager.addSubTaskM(subtask3);
+        taskManager.addSubTaskM(subtask4);
     }
 
     @DisplayName("Проверяем заполняемость трекера задач")
@@ -58,38 +64,31 @@ class InMemoryTaskManagerTest {
         Assertions.assertNotNull(taskManager, "Трекер задач пустой");
     }
 
-    @DisplayName("Проверяем что история просмотров вмещает только 10 записей")
-    @Test
-    void checkSizeOfHistoryLess10() { //проверка размерности истории просмотров, и что история просмотров не завышает указанный размер
-        Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        final int checkSize = 9;
-        final int APPEAL_TO_HISTORY = 15; //для создания запросов к истории просмотров
-        for (int i = 0; i < checkSize; i++) {
-            taskManager.addTaskM(task);
-        }
-        for (int i = 0; i <= APPEAL_TO_HISTORY; i++) {
-            taskManager.getTaskId(i);
-        }
-        final int historySize = taskManager.getHistory().size();
-        Assertions.assertTrue(checkSize <= historySize, "Проверяемый размер больше 10, т.к. " +
-                "проверяемых значений - " + checkSize);
-    }
 
     @Test
     @DisplayName("Проверяем заполняемость истории")
-    void getTaskByIdAndHistoryRewriting() { //проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
+    void getTaskByIdAndHistoryRewriting() { //проверяем заполнение истории просмотра
         addTask();
-        for (int i = 1; i < 9; i++) {
-            taskManager.getTaskId(i);
-        }
-        taskManager.getEpicId(14);
-        taskManager.getSubTaskId(15);
-        taskManager.getTaskId(7);
-        taskManager.getEpicId(14);
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Последняя задача " + (i + 1) + " - " + " " + taskManager.getHistory().get(i));
-        }
         System.out.println();
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        System.out.println();
+        System.out.println("Полная история просмотров, с порядком следования задач при записи и без дубликатов");
+        taskManager.getTaskId(1);
+        taskManager.getTaskId(2);
+        taskManager.getSubTaskId(15);
+        taskManager.getSubTaskId(16);
+        taskManager.getSubTaskId(1);
+        taskManager.getEpicId(14);
+        taskManager.getTaskId(2);
+        taskManager.getTaskId(3);
+        System.out.println("Размер истории просмотра = " + taskManager.getHistory().size());
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        Assertions.assertEquals(6, taskManager.getHistory().size(), "История просмотров не " +
+                "соответствует ожидаемому");
     }
 
     @DisplayName("Проверяем равенство задач если равен их ИД")
@@ -179,4 +178,41 @@ class InMemoryTaskManagerTest {
             System.out.println(taskManager.getSubtasks().get(i));
         }
     }
+
+    @Test
+    @DisplayName("Проверяем чистку истории после удаления всех задач из таск манагера")
+    void historyCleaningAfterDelAllTypes() {
+        addTask();
+        System.out.println();
+        System.out.println("Задачи по типам в таск манагере:");
+        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
+        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
+        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        System.out.println();
+        taskManager.addEpicM(new Epic("Эпик 2", "Для проверки"));
+        taskManager.getTaskId(1);
+        taskManager.getTaskId(2);
+        taskManager.getSubTaskId(15);
+        taskManager.getSubTaskId(16);
+        taskManager.getSubTaskId(1);
+        taskManager.getEpicId(14);
+        taskManager.getTaskId(2);
+        taskManager.getTaskId(3);
+        taskManager.getEpicId(18);
+
+        System.out.println("История просмотров до удаления, размер которой - " + taskManager.getHistory().size());
+        for (int i = 0; i < taskManager.getHistory().size(); i++) {
+            System.out.println(taskManager.getHistory().get(i));
+        }
+        taskManager.deleteEpics();
+        taskManager.deleteTasks();
+        System.out.println();
+        System.out.println("Размер истории после удаления задач всех типов - " + taskManager.getHistory().size());
+        System.out.println(taskManager.getEpics().size());
+        System.out.println(taskManager.getSubtasks().size());
+        System.out.println(taskManager.getTasks().size());
+        Assertions.assertEquals(0, taskManager.getHistory().size());
+
+    }
+
 }
