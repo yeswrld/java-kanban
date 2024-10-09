@@ -67,7 +67,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("Проверяем заполняемость истории")
-    void getTaskByIdAndHistoryRewriting() { //проверяем работу с удалением по ИД эпиков, тасков, или эпиков с его сабтасками
+    void getTaskByIdAndHistoryRewriting() { //проверяем заполнение истории просмотра
         addTask();
         System.out.println();
         System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
@@ -83,37 +83,12 @@ class InMemoryTaskManagerTest {
         taskManager.getEpicId(14);
         taskManager.getTaskId(2);
         taskManager.getTaskId(3);
-        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
+        System.out.println("Размер истории просмотра = " + taskManager.getHistory().size());
         for (int i = 0; i < taskManager.getHistory().size(); i++) {
             System.out.println(taskManager.getHistory().get(i));
         }
-        System.out.println();
-        System.out.println("Размерность истории просмотров после удаления Таска, и Сабтаска");
-        taskManager.removeTaskOnId(1);
-        taskManager.removeSubTaskOnId(15);
-        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("Размерность истории просмотров после удаления эпика");
-        taskManager.removeEpicOnId(14);
-        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("Размерность истории просмотров после удаления последних записей");
-        taskManager.removeTaskOnId(2);
-        taskManager.removeTaskOnId(3);
-        System.out.println("Размерность истории просомотра = " + taskManager.getHistory().size());
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
-        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
-        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
+        Assertions.assertEquals(6, taskManager.getHistory().size(), "История просмотров не " +
+                "соответствует ожидаемому");
     }
 
     @DisplayName("Проверяем равенство задач если равен их ИД")
@@ -205,10 +180,11 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Проверяем чистку истории после удаления всех задач одного типа")
+    @DisplayName("Проверяем чистку истории после удаления всех задач из таск манагера")
     void historyCleaningAfterDelAllTypes() {
         addTask();
         System.out.println();
+        System.out.println("Задачи по типам в таск манагере:");
         System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
         System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
         System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
@@ -224,33 +200,19 @@ class InMemoryTaskManagerTest {
         taskManager.getTaskId(3);
         taskManager.getEpicId(18);
 
-        System.out.println("История просмотров до удаления");
+        System.out.println("История просмотров до удаления, размер которой - " + taskManager.getHistory().size());
         for (int i = 0; i < taskManager.getHistory().size(); i++) {
             System.out.println(taskManager.getHistory().get(i));
         }
+        taskManager.deleteEpics();
         taskManager.deleteTasks();
         System.out.println();
-        System.out.println("История просмотров после удаления тасков");
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("История просмотров после удаления сабтасков ");
-        taskManager.deleteSubtasks();
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("История просмотров после удаления эпиков ");
-        taskManager.deleteEpics();
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        System.out.println();
-        System.out.println("Количество эпиков в таск манагере = " + taskManager.getEpics().size());
-        System.out.println("Количество сабтасков в таск манагере = " + taskManager.getSubtasks().size());
-        System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
-        System.out.println();
+        System.out.println("Размер истории после удаления задач всех типов - " + taskManager.getHistory().size());
+        System.out.println(taskManager.getEpics().size());
+        System.out.println(taskManager.getSubtasks().size());
+        System.out.println(taskManager.getTasks().size());
+        Assertions.assertEquals(0, taskManager.getHistory().size());
+
     }
 
 }
