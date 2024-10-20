@@ -78,8 +78,8 @@ class FileBackedTaskManagerTest {
         List<Task> tasks = new ArrayList<>(taskManagerLoad.getTasks());
         List<Epic> epics = new ArrayList<>((Collection) taskManagerLoad.getEpics());
         List<Subtask> subtasks = new ArrayList<>((Collection) taskManagerLoad.getSubtasks());
-        Assertions.assertEquals(tasks.get(0).getName() , "Задача 1");
-        Assertions.assertEquals(epics.get(0).getType() , Type.EPIC);
+        Assertions.assertEquals(tasks.get(0).getName(), "Задача 1");
+        Assertions.assertEquals(epics.get(0).getType(), Type.EPIC);
         Assertions.assertEquals(subtasks.get(0).getDescription(), "Описание подзадачи 2");
 
     }
