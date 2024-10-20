@@ -99,19 +99,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             Writer fileWriter = new FileWriter(file, StandardCharsets.UTF_8, false);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            {
-                bufferedWriter.write(head);
-                for (Task task : getTasks()) {
-                    bufferedWriter.write(toString(task));
-                }
-                for (Task task : getEpics()) {
-                    bufferedWriter.write(toString(task));
-                }
-                for (Task task : getSubtasks()) {
-                    bufferedWriter.write(toString(task));
-                }
-                bufferedWriter.close();
+
+            bufferedWriter.write(head);
+            for (Task task : getTasks()) {
+                bufferedWriter.write(toString(task));
             }
+            for (Task task : getEpics()) {
+                bufferedWriter.write(toString(task));
+            }
+            for (Task task : getSubtasks()) {
+                bufferedWriter.write(toString(task));
+            }
+            bufferedWriter.close();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
