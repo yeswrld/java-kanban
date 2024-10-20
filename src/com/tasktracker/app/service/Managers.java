@@ -15,15 +15,16 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getFile (){
+    public static TaskManager getFile() {
         Path path = Paths.get("src/resources/storage.csv");
         File file = new File(path.toUri());
-        if (!Files.exists(path)){
+        if (!Files.exists(path)) {
             try {
                 Files.createFile(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }return FileBackedTaskManager.load(getDefaultHistory(), file);
+        }
+        return FileBackedTaskManager.load(getDefaultHistory(), file);
     }
 }
