@@ -25,7 +25,7 @@ class FileBackedTaskManagerTest {
         taskManager.addTaskM(task1);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
         taskManager.addEpicM(epic1);
-        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 3);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 4);
         taskManager.addSubTaskM(subtask2);
     }
 
@@ -34,21 +34,44 @@ class FileBackedTaskManagerTest {
         file.deleteOnExit();
     }
 
+
+    @DisplayName("Проверка содержимого менеджеров до и после выгрузки")
+    @Test
+    void savedFileEqualsFileManager() {
+        File fileData = new File("data.csv");
+        FileBackedTaskManager fileBackedManager = new FileBackedTaskManager(Managers.getDefaultHistory(), fileData);
+        Task task5 = new Task("Задача 5", "Описание задачи 5", Status.DONE);
+        Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE);
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 2);
+        Subtask subtask3 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.IN_PROGRESS, 2);
+        fileBackedManager.addEpicM(epic1);
+        fileBackedManager.addSubTaskM(subtask2);
+        fileBackedManager.addSubTaskM(subtask3);
+        fileBackedManager.addTaskM(task5);
+        fileBackedManager.addTaskM(task6);
+        FileBackedTaskManager loadFromFile = FileBackedTaskManager.load(Managers.getDefaultHistory(), fileData);
+        Assertions.assertTrue(loadFromFile.getEpics().equals(fileBackedManager.getEpics()));
+        Assertions.assertTrue(loadFromFile.getSubtasks().equals(fileBackedManager.getSubtasks()));
+        Assertions.assertTrue(loadFromFile.getTasks().equals(fileBackedManager.getTasks()));
+
+
+    }
+
     @DisplayName("Создание и сохранение в файл")
     @Test
     void createAndSave() throws IOException {
 
         List<String> linesList = new ArrayList<>();
-        try (Reader reader = new FileReader(file, StandardCharsets.UTF_8);
-             BufferedReader br = new BufferedReader(reader)) {
+        try (Reader reader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
                 String line = br.readLine();
                 linesList.add(line + "\n");
             }
         }
         Assertions.assertEquals(linesList.get(0), "id,type,name,status,description,epic,\n");
-        Assertions.assertEquals(linesList.get(1), "2,TASK,Задача 1,NEW,Описание задачи 1,\n");
-        Assertions.assertEquals(linesList.get(3), "4,SUBTASK,Подзадача 2,IN_PROGRESS,Описание подзадачи 2,3\n");
+        Assertions.assertEquals(linesList.get(1), "3,TASK,Задача 1,NEW,Описание задачи 1,\n");
+        Assertions.assertEquals(linesList.get(3), "5,SUBTASK,Подзадача 2,IN_PROGRESS,Описание подзадачи 2,4\n");
     }
 
     @DisplayName("Очистка Менеджера задач и проверка пустоты хранилища")
@@ -58,8 +81,7 @@ class FileBackedTaskManagerTest {
         taskManager.deleteSubtasks();
         taskManager.deleteEpics();
         List<String> linesList = new ArrayList<>();
-        try (Reader reader = new FileReader(file, StandardCharsets.UTF_8);
-             BufferedReader br = new BufferedReader(reader)) {
+        try (Reader reader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
                 String line = br.readLine();
                 linesList.add(line + "\n");

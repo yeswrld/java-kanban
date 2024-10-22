@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int counter = 0;
+    protected int counter = 1;
     protected final Map<Integer, Task> taskM = new HashMap<>();
     protected final Map<Integer, Epic> epicM = new HashMap<>();
     protected final Map<Integer, Subtask> subTaskM = new HashMap<>();
@@ -56,25 +56,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        if (taskM.isEmpty()) {
-           // System.out.println("Cписок задач пуст");
-        }
+
         return new ArrayList<>(taskM.values());
     }
 
     @Override
     public List<Task> getSubtasks() {
-        if (subTaskM.isEmpty()) {
-         //   System.out.println("Список подзадач пуст");
-        }
         return new ArrayList<>(subTaskM.values());
     }
 
     @Override
     public List<Task> getEpics() {
-        if (epicM.isEmpty()) {
-           // System.out.println("Список эпиков пуст");
-        }
         return new ArrayList<>(epicM.values());
     }
 

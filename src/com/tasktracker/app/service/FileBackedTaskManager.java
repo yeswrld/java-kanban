@@ -6,12 +6,15 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private static final String HEAD = "id,type,name,status,description,epic,\n";
     private final File file;
+    private int taskCount = 0;
 
     public FileBackedTaskManager(HistoryManager historyManager, File file) {
         super(historyManager);
         this.file = file;
     }
+
 
     public static FileBackedTaskManager load(HistoryManager historyManager, File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(historyManager, file);
@@ -95,12 +98,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        String head = "id,type,name,status,description,epic,\n";
-        try {
-            Writer fileWriter = new FileWriter(file, StandardCharsets.UTF_8, false);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            bufferedWriter.write(head);
+        try (Writer fileWriter = new FileWriter(file, StandardCharsets.UTF_8, false);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write(HEAD);
             for (Task task : getTasks()) {
                 bufferedWriter.write(toString(task));
             }
@@ -110,14 +110,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task task : getSubtasks()) {
                 bufferedWriter.write(toString(task));
             }
-            bufferedWriter.close();
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagersExep("Ошибка записи в файл");
         }
     }
 
-    private void load(File file) {
+    public void load(File file) {
         try (Reader reader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader bufferedReader = new BufferedReader(reader)) {
             bufferedReader.readLine();
             while (bufferedReader.ready()) {
@@ -127,22 +125,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (counter < task.getId()) {
                     counter = task.getId();
                 }
-                if (task.getClass().equals(Task.class)) {
+                if (task.getType().equals(Type.TASK)) {
                     taskM.put(task.getId(), task);
-                } else if (task.getClass().equals(Epic.class)) {
+                    taskCount++;
+                } else if (task.getType().equals(Type.EPIC)) {
                     Epic epic = (Epic) task;
                     epicM.put(epic.getId(), epic);
-                } else if (task.getClass().equals(Subtask.class)) {
+                    taskCount++;
+                } else if (task.getType().equals(Type.SUBTASK)) {
                     Subtask subtask = (Subtask) task;
                     subTaskM.put(subtask.getId(), subtask);
+                    taskCount++;
                     Epic epic = epicM.get(subtask.getEpicId());
                     epic.addSubtaskId(subtask.getId());
                 }
             }
 
-            if (counter != 1) counter++;
+            if (taskCount != counter) counter++;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagersExep("Ошибка загрузки из файла");
         }
     }
 

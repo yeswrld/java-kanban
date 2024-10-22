@@ -22,7 +22,7 @@ public class Managers {
             try {
                 Files.createFile(path);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ManagersExep("Ошибка при создании файла");
             }
         }
         return FileBackedTaskManager.load(getDefaultHistory(), file);
