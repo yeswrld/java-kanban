@@ -12,10 +12,10 @@ import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private int counter = 0;
-    private final Map<Integer, Task> taskM = new HashMap<>();
-    private final Map<Integer, Epic> epicM = new HashMap<>();
-    private final Map<Integer, Subtask> subTaskM = new HashMap<>();
+    protected int counter = 1;
+    protected final Map<Integer, Task> taskM = new HashMap<>();
+    protected final Map<Integer, Epic> epicM = new HashMap<>();
+    protected final Map<Integer, Subtask> subTaskM = new HashMap<>();
     private final HistoryManager historyManager;
 
 
@@ -25,23 +25,23 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     @Override
-    public int addTaskM(Task task) {
+    public Task addTaskM(Task task) {
         int taskCount = generateCounter();
         task.setId(taskCount);
         taskM.put(taskCount, task);
-        return taskCount;
+        return task;
     }
 
     @Override
-    public int addEpicM(Epic epic) {
+    public Epic addEpicM(Epic epic) {
         int epicCount = generateCounter();
         epic.setId(epicCount);
         epicM.put(epicCount, epic);
-        return epicCount;
+        return epic;
     }
 
     @Override
-    public int addSubTaskM(Subtask subtask) {
+    public Subtask addSubTaskM(Subtask subtask) {
         int subTaskCount = generateCounter();
         subtask.setId(subTaskCount);
         Epic epic = epicM.get(subtask.getEpicId());
@@ -49,32 +49,24 @@ public class InMemoryTaskManager implements TaskManager {
             subTaskM.put(subTaskCount, subtask);
             epic.addSubtaskId(subTaskCount);
             updateEpicStatus(epic.getId());
-            return subTaskCount;
+            return subtask;
         }
-        return subTaskCount;
+        return subtask;
     }
 
     @Override
     public List<Task> getTasks() {
-        if (taskM.isEmpty()) {
-            System.out.println("Cписок задач пуст");
-        }
+
         return new ArrayList<>(taskM.values());
     }
 
     @Override
     public List<Task> getSubtasks() {
-        if (subTaskM.isEmpty()) {
-            System.out.println("Список подзадач пуст");
-        }
         return new ArrayList<>(subTaskM.values());
     }
 
     @Override
     public List<Task> getEpics() {
-        if (epicM.isEmpty()) {
-            System.out.println("Список эпиков пуст");
-        }
         return new ArrayList<>(epicM.values());
     }
 

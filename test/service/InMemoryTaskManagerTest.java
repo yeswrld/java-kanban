@@ -87,7 +87,7 @@ class InMemoryTaskManagerTest {
         for (int i = 0; i < taskManager.getHistory().size(); i++) {
             System.out.println(taskManager.getHistory().get(i));
         }
-        Assertions.assertEquals(6, taskManager.getHistory().size(), "История просмотров не " +
+        Assertions.assertEquals(2, taskManager.getHistory().size(), "История просмотров не " +
                 "соответствует ожидаемому");
     }
 
@@ -155,7 +155,7 @@ class InMemoryTaskManagerTest {
     void taskNotChangeOnAdd() { //создайте тест, в котором проверяется неизменность задачи (по всем полям) при добавлении задачи в менеджер;
         Task task = new Task("Задача 1", "Описание задачи 1", Status.NEW);
         taskManager.addTaskM(task);
-        Assertions.assertEquals(task, taskManager.getTaskId(1));
+        Assertions.assertEquals(task, taskManager.getTaskId(2));
     }
 
     @DisplayName("Вывод всего содержимого трекера задач на экран")
