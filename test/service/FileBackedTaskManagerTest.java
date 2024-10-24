@@ -13,7 +13,8 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FileBackedTaskManagerTest {
-    private TaskManager taskManager, taskManagerLoad;
+    private TaskManager taskManager;
+    private TaskManager taskManagerLoad;
     private File file;
 
 

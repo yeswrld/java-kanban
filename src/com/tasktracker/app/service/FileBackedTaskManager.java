@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final String HEAD = "id,type,name,status,description,epic,\n";
     private final File file;
-    private int taskCount = 0;
 
     public FileBackedTaskManager(HistoryManager historyManager, File file) {
         super(historyManager);
@@ -127,21 +126,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
                 if (task.getType().equals(Type.TASK)) {
                     taskM.put(task.getId(), task);
-                    taskCount++;
+
                 } else if (task.getType().equals(Type.EPIC)) {
                     Epic epic = (Epic) task;
                     epicM.put(epic.getId(), epic);
-                    taskCount++;
+
                 } else if (task.getType().equals(Type.SUBTASK)) {
                     Subtask subtask = (Subtask) task;
                     subTaskM.put(subtask.getId(), subtask);
-                    taskCount++;
+
                     Epic epic = epicM.get(subtask.getEpicId());
                     epic.addSubtaskId(subtask.getId());
                 }
             }
 
-            if (taskCount != counter) counter++;
+            counter++;
         } catch (IOException e) {
             throw new ManagersExep("Ошибка загрузки из файла");
         }
