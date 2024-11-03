@@ -1,14 +1,26 @@
 package com.tasktracker.app.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
     private final List<Integer> subtaskIdList = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
+        this.endTime = null;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public void addSubtaskId(int subTaskId) {
@@ -45,4 +57,5 @@ public class Epic extends Task {
     public int hashCode() {
         return Objects.hash(super.hashCode(), subtaskIdList);
     }
+
 }

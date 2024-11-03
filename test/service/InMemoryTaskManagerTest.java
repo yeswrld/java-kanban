@@ -11,6 +11,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.DateFormatter;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @DisplayName("Проверка InMemoryTaksManager")
 class InMemoryTaskManagerTest {
     private InMemoryTaskManager taskManager;
@@ -21,21 +28,21 @@ class InMemoryTaskManagerTest {
     }
 
     void addTask() {
-        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE);
-        Task task3 = new Task("Задача 3", "Описание задачи 3", Status.DONE);
-        Task task4 = new Task("Задача 4", "Описание задачи 4", Status.NEW);
-        Task task5 = new Task("Задача 5", "Описание задачи 5", Status.DONE);
-        Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE);
-        Task task7 = new Task("Задача 7", "Описание задачи 7", Status.NEW);
-        Task task8 = new Task("Задача 8", "Описание задачи 8", Status.DONE);
-        Task task9 = new Task("Задача 9", "Описание задачи 9", Status.DONE);
-        Task task10 = new Task("Задача 10", "Описание задачи 10", Status.DONE);
-        Task task11 = new Task("Задача 11", "Описание задачи 11", Status.DONE);
-        Task task12 = new Task("Задача 12", "Описание задачи 12", Status.DONE);
-        Task task13 = new Task("Задача 13", "Описание задачи 13", Status.DONE);
-        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
-        Subtask subtask3 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), Duration.ZERO);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task3 = new Task("Задача 3", "Описание задачи 3", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task4 = new Task("Задача 4", "Описание задачи 4", Status.NEW, LocalDateTime.now(), Duration.ZERO);
+        Task task5 = new Task("Задача 5", "Описание задачи 5", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task7 = new Task("Задача 7", "Описание задачи 7", Status.NEW, LocalDateTime.now(), Duration.ZERO);
+        Task task8 = new Task("Задача 8", "Описание задачи 8", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task9 = new Task("Задача 9", "Описание задачи 9", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task10 = new Task("Задача 10", "Описание задачи 10", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task11 = new Task("Задача 11", "Описание задачи 11", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task12 = new Task("Задача 12", "Описание задачи 12", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task13 = new Task("Задача 13", "Описание задачи 13", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 15);
+        Subtask subtask3 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.IN_PROGRESS, 15);
         Subtask subtask4 = new Subtask("Подзадача 4", "Описание подзадачи 2", Status.IN_PROGRESS, 14);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
         taskManager.addTaskM(task1);
@@ -84,10 +91,7 @@ class InMemoryTaskManagerTest {
         taskManager.getTaskId(2);
         taskManager.getTaskId(3);
         System.out.println("Размер истории просмотра = " + taskManager.getHistory().size());
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
-        Assertions.assertEquals(2, taskManager.getHistory().size(), "История просмотров не " +
+        Assertions.assertEquals(3, taskManager.getHistory().size(), "История просмотров не " +
                 "соответствует ожидаемому");
     }
 
@@ -166,17 +170,15 @@ class InMemoryTaskManagerTest {
         taskManager.addEpicM(epic2);
         System.out.println("Содержимое TaskManager:");
         System.out.println("Задачи:");
-        for (int i = 0; i < taskManager.getTasks().size(); i++) {
-            System.out.println(taskManager.getTasks().get(i));
-        }
-        System.out.println("Эпики:");
-        for (int i = 0; i < taskManager.getEpics().size(); i++) {
-            System.out.println(taskManager.getEpics().get(i));
-        }
+        taskManager.getTasks().forEach(task -> task.setStartTime(LocalDateTime.now()));
+        taskManager.getTasks().forEach(System.out::println);
+
         System.out.println("Подзадачи:");
-        for (int i = 0; i < taskManager.getSubtasks().size(); i++) {
-            System.out.println(taskManager.getSubtasks().get(i));
-        }
+        taskManager.getSubtasks().forEach(subtask -> subtask.setStartTime(LocalDateTime.now()));
+        taskManager.getSubtasks().forEach(System.out::println);
+        System.out.println("Эпики:");
+        taskManager.getEpics().forEach(epic -> epic.setStartTime(LocalDateTime.now()));
+        taskManager.getEpics().forEach(System.out::println);
     }
 
     @Test
@@ -199,11 +201,7 @@ class InMemoryTaskManagerTest {
         taskManager.getTaskId(2);
         taskManager.getTaskId(3);
         taskManager.getEpicId(18);
-
         System.out.println("История просмотров до удаления, размер которой - " + taskManager.getHistory().size());
-        for (int i = 0; i < taskManager.getHistory().size(); i++) {
-            System.out.println(taskManager.getHistory().get(i));
-        }
         taskManager.deleteEpics();
         taskManager.deleteTasks();
         System.out.println();
@@ -215,4 +213,91 @@ class InMemoryTaskManagerTest {
 
     }
 
+    @Test
+    @DisplayName("Проверка работы для 8 спринта")
+    void workingCheck() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM.yyyy");
+        LocalDateTime dateTime = LocalDateTime.now();
+        System.out.println(dateTime.format(formatter));
+        Task task777 = new Task("Задача", "Описание", Status.NEW, dateTime, Duration.ofSeconds(15));
+        taskManager.addTaskM(task777);
+        task777.setStartTime(dateTime);
+        task777.setDuration(Duration.ofSeconds(60));
+        System.out.println(taskManager.getTasks());
+        System.out.println("Время окончания = " + task777.getEndTime().format(formatter));
+    }
+
+    @Test
+    @DisplayName("Проверка прироритетности задач")
+    void priorityTaskTest() {
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Epic epic1 = new Epic("Эпик 1", "Описание 1 ");
+        Subtask subtask1 = new Subtask("Последняя задача", "Её описание", Status.IN_PROGRESS, 4);
+        task1.setStartTime(LocalDateTime.now());
+        task2.setStartTime(LocalDateTime.of(2024, 11, 3, 23, 15, 32));
+        subtask1.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
+        subtask1.setDuration(Duration.ofDays(30));
+        taskManager.addTaskM(task1);
+        taskManager.addTaskM(task2);
+        taskManager.addEpicM(epic1);
+        taskManager.addSubTaskM(subtask1);
+        Assertions.assertEquals("Последняя задача", taskManager.getPrioritizedTasks().getLast().getName());
+
+    }
+
+    @Test
+    @DisplayName("Проверка наличия эпика у подзадачи и изменения статуса эпика при изменении статусов у сабтасков")
+    void subtaskHaveEpicTest() {
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Epic epic1 = new Epic("Эпик 1", "Описание 1 ");
+
+        Subtask subtask1 = new Subtask("Подзадача 1", "Её описание", Status.IN_PROGRESS, 4);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Её описание", Status.IN_PROGRESS, 4);
+        task1.setStartTime(LocalDateTime.now());
+        task2.setStartTime(LocalDateTime.of(2024, 11, 3, 23, 15, 32));
+        subtask1.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
+        subtask1.setDuration(Duration.ofDays(15));
+        subtask2.setStartTime(LocalDateTime.of(2025, 12, 4, 20, 00, 55));
+        subtask2.setDuration(Duration.ofMinutes(15));
+        taskManager.addTaskM(task1);
+        taskManager.addTaskM(task2);
+        taskManager.addEpicM(epic1);
+        taskManager.addSubTaskM(subtask1);
+        taskManager.addSubTaskM(subtask2);
+        subtask1.setStatus(Status.DONE);
+        subtask2.setStatus(Status.DONE);
+        taskManager.updateSubstask(subtask1);
+        taskManager.updateSubstask(subtask2);
+        Assertions.assertEquals(2, taskManager.returnSubtasksOnEpicId(4).size(), "Кол-во сабтасков не соответвует");
+        Assertions.assertEquals(Status.DONE, epic1.getStatus(), "Статус эпика не поменялся");
+
+    }
+
+    @Test
+    @DisplayName("Проверка пересечения подзадач")
+        //Задач в таскманагере типа сабьтаск должно быть 1, так как их стартовое время совпадает
+    void subtaskintersectionTest() {
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE, LocalDateTime.now(), Duration.ZERO);
+        Epic epic1 = new Epic("Эпик 1", "Описание 1 ");
+
+        Subtask subtask1 = new Subtask("Подзадача 1", "Её описание", Status.IN_PROGRESS, 4);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Её описание", Status.IN_PROGRESS, 4);
+        task1.setStartTime(LocalDateTime.now());
+        task2.setStartTime(LocalDateTime.of(2024, 11, 3, 23, 15, 32));
+        subtask1.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
+        subtask1.setDuration(Duration.ofDays(15));
+        subtask2.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
+        subtask2.setDuration(Duration.ofMinutes(15));
+        taskManager.addTaskM(task1);
+        taskManager.addTaskM(task2);
+        taskManager.addEpicM(epic1);
+        taskManager.addSubTaskM(subtask1);
+        taskManager.addSubTaskM(subtask2);
+        Assertions.assertEquals(1, taskManager.returnSubtasksOnEpicId(4).size(), "Кол-во сабтасков не соответвует");
+
+
+    }
 }
