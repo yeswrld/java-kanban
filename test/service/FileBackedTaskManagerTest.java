@@ -19,7 +19,6 @@ class FileBackedTaskManagerTest {
     private TaskManager taskManager;
     private TaskManager taskManagerLoad;
     private File file;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM.yyyy");
     LocalDateTime dateTime = LocalDateTime.now();
 
     @BeforeEach

@@ -11,12 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.text.DateFormatter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Проверка InMemoryTaksManager")
 class InMemoryTaskManagerTest {
