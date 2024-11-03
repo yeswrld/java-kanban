@@ -1,7 +1,5 @@
 package com.tasktracker.app.model;
 
-import com.tasktracker.app.service.InMemoryTaskManager;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
