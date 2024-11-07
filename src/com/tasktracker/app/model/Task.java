@@ -25,7 +25,7 @@ public class Task {
         this.status = status;
         this.id = id;
         this.startTime = null;
-        this.duration = Duration.ZERO;
+        this.duration = null;
     }
 
     public Type getType() {
@@ -81,7 +81,7 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime == null) {
+        if (startTime == null && duration == null) {
             return null;
         } else return startTime.plus(duration);
     }

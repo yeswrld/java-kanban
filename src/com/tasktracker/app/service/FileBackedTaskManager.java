@@ -132,20 +132,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
                 if (task.getType().equals(Type.TASK)) {
                     taskM.put(task.getId(), task);
+                    prioritizedTasks.add(task);
 
                 } else if (task.getType().equals(Type.EPIC)) {
                     Epic epic = (Epic) task;
                     epicM.put(epic.getId(), epic);
+                    prioritizedTasks.add(epic);
 
                 } else if (task.getType().equals(Type.SUBTASK)) {
                     Subtask subtask = (Subtask) task;
                     subTaskM.put(subtask.getId(), subtask);
                     Epic epic = epicM.get(subtask.getEpicId());
                     epic.addSubtaskId(subtask.getId());
+                    prioritizedTasks.add(subtask);
                 }
             }
 
-            counter++;
+            if (counter != 1) counter++;
         } catch (IOException e) {
             throw new ManagersExep("Ошибка загрузки из файла");
         }
@@ -175,8 +178,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(split[3]);
         String description = split[4];
         int epicId = 0;
-        LocalDateTime startTime = !split[6].isEmpty() ? LocalDateTime.parse(split[6]) : null;
-        Duration duration = !split[7].isEmpty() ? Duration.parse(split[7]) : null;
+        LocalDateTime startTime = !split[6].isBlank() ? LocalDateTime.parse(split[6]) : null;
+        Duration duration = !split[7].isBlank() ? Duration.parse(split[7]) : null;
         if (tasktype.equals(Type.SUBTASK)) {
             epicId = Integer.parseInt(split[5]);
         }

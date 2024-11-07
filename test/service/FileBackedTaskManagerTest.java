@@ -10,33 +10,17 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class FileBackedTaskManagerTest {
-    private TaskManager taskManager;
+@DisplayName("Проверка FileBackedTaskManagerTest")
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private TaskManager taskManagerLoad;
     private File file;
-    LocalDateTime dateTime = LocalDateTime.now();
 
     @BeforeEach
     public void beforeEach() throws IOException {
         file = File.createTempFile("storage", ".csv");
         taskManager = FileBackedTaskManager.load(Managers.getDefaultHistory(), file);
-        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW);
-        task1.setStartTime(LocalDateTime.of(2024, 11, 15, 22, 22, 22));
-        task1.setDuration(Duration.ofMinutes(15));
-        taskManager.addTaskM(task1);
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-        epic1.setStartTime(dateTime);
-        epic1.setDuration(Duration.ofMinutes(15));
-        taskManager.addEpicM(epic1);
-        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.IN_PROGRESS, 4);
-        subtask2.setStartTime(LocalDateTime.of(2024, 12, 10, 11, 11, 11));
-        subtask2.setDuration(Duration.ofMinutes(15));
-        taskManager.addSubTaskM(subtask2);
     }
 
     @AfterEach
@@ -50,28 +34,27 @@ class FileBackedTaskManagerTest {
     void savedFileEqualsFileManager() {
         File fileData = new File("data.csv");
         FileBackedTaskManager fileBackedManager = new FileBackedTaskManager(Managers.getDefaultHistory(), fileData);
-        Task task5 = new Task("Задача 5", "Описание задачи 5", Status.IN_PROGRESS, LocalDateTime.now(), Duration.ofSeconds(15));
-        Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE, LocalDateTime.of(2024, 10, 12, 18, 05), Duration.ofMinutes(15));
+        Task task5 = new Task("Задача 5", "Описание задачи 5", Status.IN_PROGRESS);
+        Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-        Subtask subtask1 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.NEW, 2, LocalDateTime.now(), Duration.ZERO);
-        Subtask subtask2 = new Subtask("Подзадача 3", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), Duration.ZERO);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.NEW, 2, LocalDateTime.now(), null);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), null);
         fileBackedManager.addEpicM(epic1);
-        subtask1.setDuration(Duration.ofSeconds(60));
-        subtask1.setStartTime(dateTime);
+        subtask1.setDuration(Duration.ofHours(1));
+        subtask1.setStartTime(LocalDateTime.of(2025, 01, 01, 11, 00));
         subtask2.setDuration(Duration.ofHours(3));
-        subtask2.setStartTime(dateTime.plusHours(3));
+        subtask2.setStartTime(LocalDateTime.of(2025, 01, 01, 12, 03));
         task5.setDuration(Duration.ofHours(1));
         fileBackedManager.addSubTaskM(subtask1);
         fileBackedManager.addSubTaskM(subtask2);
-        task5.setStartTime(dateTime);
-        task6.setStartTime(dateTime);
-
-        fileBackedManager.getPrioritizedTasks().forEach(System.out::println);
+        task5.setStartTime(LocalDateTime.of(2024, 11, 13, 15, 01));
+        task6.setStartTime(LocalDateTime.of(2024, 11, 13, 15, 11));
+        task5.setDuration(Duration.ofMinutes(10));
+        task6.setDuration(Duration.ofMinutes(13));
         System.out.println();
-
-
         fileBackedManager.addTaskM(task5);
         fileBackedManager.addTaskM(task6);
+        fileBackedManager.getPrioritizedTasks().forEach(System.out::println);
         FileBackedTaskManager loadFromFile = FileBackedTaskManager.load(Managers.getDefaultHistory(), fileData);
         Assertions.assertTrue(loadFromFile.getTasks().equals(fileBackedManager.getTasks()));
         Assertions.assertTrue(loadFromFile.getEpics().equals(fileBackedManager.getEpics()));
@@ -84,7 +67,7 @@ class FileBackedTaskManagerTest {
     @DisplayName("Создание и сохранение в файл")
     @Test
     void createAndSave() throws IOException {
-
+        createTask();
         List<String> linesList = new ArrayList<>();
         try (Reader reader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
@@ -93,16 +76,16 @@ class FileBackedTaskManagerTest {
             }
         }
         Assertions.assertEquals(linesList.get(0), "id,type,name,status,description,epic, startTime, duration\n");
-        Assertions.assertEquals(linesList.get(1), "3,TASK,Задача 1,NEW,Описание задачи 1,,2024-11-15T22:22:22,PT15M\n");
-        Assertions.assertEquals(linesList.get(3), "5,SUBTASK,Подзадача 2,IN_PROGRESS,Описание подзадачи 2,4,2024-12-10T11:11:11,PT15M\n");
+        Assertions.assertEquals(linesList.get(1), "2,TASK,Задача 1,NEW,Описание задачи 1,,2025-01-01T12:15:30,PT1M\n");
+        Assertions.assertEquals(linesList.get(3), "4,SUBTASK,Подзадача 2,IN_PROGRESS,Описание подзадачи 2,3,2025-11-04T20:00:55,PT360H\n");
     }
 
     @DisplayName("Очистка Менеджера задач и проверка пустоты хранилища")
     @Test
     void cleaningTaskManager() { // после удаления задач всех типов в истории должна остаться только одна строка - оглавление
         taskManager.deleteTasks();
-        taskManager.deleteSubtasks();
         taskManager.deleteEpics();
+        taskManager.deleteSubtasks();
         List<String> linesList = new ArrayList<>();
         try (Reader reader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
@@ -119,6 +102,7 @@ class FileBackedTaskManagerTest {
     @DisplayName("Загрузка из файла")
     @Test
     void loadFromFile() {
+        createTask();
         taskManagerLoad = FileBackedTaskManager.load(Managers.getDefaultHistory(), file);
         List<Task> tasks = new ArrayList<>(taskManagerLoad.getTasks());
         List<Epic> epics = new ArrayList<>((Collection) taskManagerLoad.getEpics());
@@ -128,5 +112,6 @@ class FileBackedTaskManagerTest {
         Assertions.assertEquals(subtasks.get(0).getDescription(), "Описание подзадачи 2");
 
     }
+
 
 }

@@ -27,4 +27,8 @@ public class Managers {
         }
         return FileBackedTaskManager.load(getDefaultHistory(), file);
     }
+
+    public static TaskManager getMemoryManager() {
+        return new InMemoryTaskManager(getDefaultHistory());
+    }
 }
