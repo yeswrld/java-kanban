@@ -1,5 +1,7 @@
 package com.tasktracker.app.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -7,6 +9,11 @@ public class Subtask extends Task {
 
     public Subtask(String name, String description, Status status, int epicId) {
         super(name, description, status);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, Status status, int epicId, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
         this.epicId = epicId;
     }
 
@@ -18,6 +25,11 @@ public class Subtask extends Task {
     @Override
     public Type getType() {
         return Type.SUBTASK;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 
     @Override

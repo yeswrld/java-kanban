@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface TaskManager {
 
+    List<Task> getPrioritizedTasks();
+
     Task addTaskM(Task task);
 
     Epic addEpicM(Epic epic);
@@ -36,9 +38,9 @@ public interface TaskManager {
 
     void updateEpic(Epic epic);
 
-    void updateSubstask(Subtask subtask);
+    Subtask updateSubstask(Subtask subtask);
 
-    void updateTask(Task task);
+    Task updateTask(Task task);
 
     void deleteSubtasks();
 
