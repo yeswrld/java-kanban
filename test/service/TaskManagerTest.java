@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    T taskManager;
+    TaskManager taskManager;
     Task task1;
     Epic epic1;
     Subtask subtask1;
