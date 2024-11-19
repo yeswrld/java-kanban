@@ -21,7 +21,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
 
     void createTask() {
-        task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(1));
+        task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), 1);
         task1.setStartTime(LocalDateTime.of(2025, 01, 1, 12, 15, 30));
         task1.setDuration(Duration.ofMinutes(1));
         taskManager.addTaskM(task1);
@@ -119,8 +119,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void subtasksNotEqualsByDescription() { //
         Epic epic = new Epic("Эпик 1", "Описание эпика 1");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.DONE, 2, LocalDateTime.now(), null);
-        Subtask subtask2 = new Subtask("Подзадача 1", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), null);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.DONE, 2, LocalDateTime.now(), 0);
+        Subtask subtask2 = new Subtask("Подзадача 1", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), 0);
         subtask1.setDuration(Duration.ofHours(1));
         subtask1.setStartTime(LocalDateTime.of(2025, 01, 01, 11, 00));
         subtask2.setDuration(Duration.ofHours(3));
@@ -165,8 +165,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         System.out.println("Количество задач в таск манагере = " + taskManager.getTasks().size());
         System.out.println();
         taskManager.addEpicM(new Epic("Эпик 2", "Для проверки"));
-        taskManager.getEpicId(4);
-        taskManager.getSubTaskId(5);
         taskManager.getTaskId(2);
         System.out.println("История просмотров до удаления, размер которой - " + taskManager.getHistory().size());
         taskManager.deleteEpics();
@@ -187,7 +185,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM.yyyy");
         LocalDateTime dateTime = LocalDateTime.now();
         System.out.println(dateTime.format(formatter));
-        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(1));
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), 0);
         task1.setStartTime(LocalDateTime.of(2025, 01, 1, 12, 15, 30));
         task1.setDuration(Duration.ofMinutes(1));
         taskManager.addTaskM(task1);

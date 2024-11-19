@@ -9,10 +9,12 @@ public class Epic extends Task {
     private final List<Integer> subtaskIdList = new ArrayList<>();
     private LocalDateTime endTime;
 
+
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
         this.endTime = null;
     }
+
 
     @Override
     public LocalDateTime getEndTime() {
@@ -38,6 +40,7 @@ public class Epic extends Task {
     public void clearSubtaskMapIdList() {
         subtaskIdList.clear();
     }
+
 
     @Override
     public Type getType() {

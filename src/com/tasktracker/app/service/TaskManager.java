@@ -36,7 +36,7 @@ public interface TaskManager {
 
     void removeEpicOnId(int id);
 
-    void updateEpic(Epic epic);
+    Epic updateEpic(Epic epic);
 
     Subtask updateSubstask(Subtask subtask);
 
