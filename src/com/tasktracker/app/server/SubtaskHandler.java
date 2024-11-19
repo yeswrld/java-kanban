@@ -68,12 +68,12 @@ public class SubtaskHandler extends BaseHandler implements HttpHandler {
                 return;
             }
             Subtask subtaskOfRequest = gson.fromJson(jsonElement, Subtask.class);
-            Subtask subtask = new Subtask(subtaskOfRequest.getName()
-                    , subtaskOfRequest.getDescription()
-                    , subtaskOfRequest.getStatus()
-                    , subtaskOfRequest.getEpicId()
-                    , subtaskOfRequest.getStartTime()
-                    , (int) subtaskOfRequest.getDuration().toMinutes());
+            Subtask subtask = new Subtask(subtaskOfRequest.getName(),
+                    subtaskOfRequest.getDescription(),
+                    subtaskOfRequest.getStatus(),
+                    subtaskOfRequest.getEpicId(),
+                    subtaskOfRequest.getStartTime(),
+                    (int) subtaskOfRequest.getDuration().toMinutes());
             if (subtaskOfRequest.getId() > 0) {
                 subtask.setId(subtaskOfRequest.getId());
                 subtask.setDescription(subtaskOfRequest.getDescription());
