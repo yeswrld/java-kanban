@@ -69,10 +69,10 @@ public class TaskHandler extends BaseHandler implements HttpHandler {
             }
 
             Task taskOfElement = gson.fromJson(jsonElement, Task.class);
-            Task task = new Task(taskOfElement.getName(), taskOfElement.getDescription()
-                    , taskOfElement.getStatus()
-                    , taskOfElement.getStartTime()
-                    , (int) taskOfElement.getDuration().toMinutes());
+            Task task = new Task(taskOfElement.getName(), taskOfElement.getDescription(),
+                    taskOfElement.getStatus(),
+                    taskOfElement.getStartTime(),
+                    (int) taskOfElement.getDuration().toMinutes());
 
             if (taskOfElement.getId() > 0) {
                 task.setId(taskOfElement.getId());
