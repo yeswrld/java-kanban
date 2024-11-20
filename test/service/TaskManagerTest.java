@@ -229,7 +229,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         task2.setDuration(Duration.ofMinutes(1));
         subtask1.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
         subtask1.setDuration(Duration.ofDays(15));
-        subtask2.setStartTime(LocalDateTime.of(2025, 11, 4, 20, 00, 55));
+        subtask2.setStartTime(LocalDateTime.of(2026, 11, 4, 20, 00, 58));
         subtask2.setDuration(Duration.ofMinutes(15));
         taskManager.addTaskM(task1);
         taskManager.addTaskM(task2);
@@ -237,7 +237,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addSubTaskM(subtask1);
         taskManager.addSubTaskM(subtask2);
         taskManager.getPrioritizedTasks().forEach(System.out::println);
-        Assertions.assertEquals(1, taskManager.returnSubtasksOnEpicId(4).size(), "Кол-во сабтасков не соответвует");
+        Assertions.assertEquals(2, taskManager.returnSubtasksOnEpicId(4).size(), "Кол-во сабтасков не соответвует");
 
 
     }
