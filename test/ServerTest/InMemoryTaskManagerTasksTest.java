@@ -280,7 +280,7 @@ public class InMemoryTaskManagerTasksTest {
         HttpResponse<String> task1Response = taskHttpClient.send(task1HttpRequest, HttpResponse.BodyHandlers.ofString());
         HttpRequest task2HttpRequest = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(task2Json2)).build();
         HttpResponse<String> task2Response = taskHttpClient.send(task2HttpRequest, HttpResponse.BodyHandlers.ofString());
-
+        Assertions.assertEquals(406, task2Response.statusCode());
         Assertions.assertEquals(1, taskManager.getTasks().size(), "Задачи пересекаются по времени");
         Assertions.assertEquals(1, taskManager.getPrioritizedTasks().size(), "Задачи пересекаются по времени");
     }

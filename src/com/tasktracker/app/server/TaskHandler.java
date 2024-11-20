@@ -95,9 +95,9 @@ public class TaskHandler extends BaseHandler implements HttpHandler {
             } else {
                 sendNotFoundMessage(exchange);
             }
-        } catch (ManagersExep e) {
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
-            sendNotFoundMessage(exchange);
+            sendIntersectionFindMessage(exchange);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
