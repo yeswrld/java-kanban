@@ -219,7 +219,7 @@ public class InMemoryTaskManagerEpicsTest {
         HttpResponse<String> epicResponse = epicClient.send(epicHttpRequest, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(1, taskManager.getEpics().size());
 
-        URI getUri = URI.create("http://localhost:8080/epics/7");
+        URI getUri = URI.create("http://localhost:8080/epics/6");
         HttpRequest epicsGetHttpRequest = HttpRequest.newBuilder().uri(getUri).GET().build();
         HttpResponse<String> epicGetResponse = epicClient.send(epicsGetHttpRequest, HttpResponse.BodyHandlers.ofString());
 
@@ -260,5 +260,26 @@ public class InMemoryTaskManagerEpicsTest {
         JsonElement jsonElement = JsonParser.parseString(epicGetResponse.body());
         JsonObject jsonObject = jsonElement.getAsJsonArray().get(0).getAsJsonObject();
         Assertions.assertEquals(jsonObject.get("name").getAsString(), taskManager.getSubtasks().getFirst().getName());
+    }
+
+    @DisplayName("Тест sendErrorRequestTest - 500")
+    @Test
+    public void sendErrorRequestTest() throws IOException, InterruptedException {
+        Epic epic = new Epic("Эпик для тасков", "Описание эпика 1");
+        epic.setStartTime(LocalDateTime.now().plusMinutes(5));
+        epic.setDuration(Duration.ofHours(1));
+        HttpClient epicClient = HttpClient.newHttpClient();
+        String epicJson = gson.toJson(epic);
+        URI epicUri = URI.create("http://localhost:8080/epics");
+
+        HttpRequest epicHttpRequest = HttpRequest.newBuilder().uri(epicUri).POST(HttpRequest.BodyPublishers.ofString(epicJson)).build();
+        HttpResponse<String> epicResponse = epicClient.send(epicHttpRequest, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(1, taskManager.getEpics().size());
+        URI delUri = URI.create("http://localhost:8080/epics/delete5/");
+        HttpRequest epicDeleteRequest = HttpRequest.newBuilder().uri(delUri).GET().build();
+        HttpResponse<String> response = epicClient.send(epicDeleteRequest, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(500, response.statusCode(), "Статус код не соответствует ожидаемому");
+        Assertions.assertEquals(1, taskManager.getEpics().size(), "Кол-во эпиков не соотвествует ожидаемому");
     }
 }

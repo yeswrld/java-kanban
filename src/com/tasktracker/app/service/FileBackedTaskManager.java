@@ -1,6 +1,7 @@
 package com.tasktracker.app.service;
 
 import com.tasktracker.app.model.*;
+import com.tasktracker.app.service.CustomExeptions.ManagersExep;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -54,30 +55,33 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (tasktype.equals(Type.SUBTASK)) {
             epicId = Integer.parseInt(split[5]);
         }
-
-        if (tasktype == Type.TASK) {
-            Task task = new Task(name, description, status);
-            task.setId(id);
-            task.setStatus(status);
-            task.setStartTime(startTime);
-            task.setDuration(duration);
-            return task;
-        } else if (tasktype == Type.EPIC) {
-            Epic epic = new Epic(name, description);
-            epic.setId(id);
-            epic.setStatus(status);
-            epic.setStartTime(startTime);
-            epic.setDuration(duration);
-            return epic;
-        } else {
-            Subtask subtask = new Subtask(name, description, status, epicId);
-            subtask.setId(id);
-            subtask.setStatus(status);
-            subtask.setStartTime(startTime);
-            subtask.setDuration(duration);
-            return subtask;
-
+        switch (tasktype) {
+            case TASK: {
+                Task task = new Task(name, description, status);
+                task.setId(id);
+                task.setStatus(status);
+                task.setStartTime(startTime);
+                task.setDuration(duration);
+                return task;
+            }
+            case EPIC: {
+                Epic epic = new Epic(name, description);
+                epic.setId(id);
+                epic.setStatus(status);
+                epic.setStartTime(startTime);
+                epic.setDuration(duration);
+                return epic;
+            }
+            default: {
+                Subtask subtask = new Subtask(name, description, status, epicId);
+                subtask.setId(id);
+                subtask.setStatus(status);
+                subtask.setStartTime(startTime);
+                subtask.setDuration(duration);
+                return subtask;
+            }
         }
+
     }
 
     @Override
@@ -141,7 +145,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void removeEpicOnId(int id) {
+    public void removeEpicOnId(int id) throws Exception {
         super.removeEpicOnId(id);
         save();
     }

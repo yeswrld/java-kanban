@@ -143,7 +143,32 @@ public class InMemoryTaskManagerSubtaskTest {
         HttpRequest request = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(json)).build();
         HttpResponse<String> response = taskHttpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(400, response.statusCode(), "Статус код неккоректного запроса не прошёл");
+    }
 
+    @DisplayName("Тест sendErrorRequestTest - 500")
+    @Test
+    public void sendErrorRequestTest() throws IOException, InterruptedException {
+        URI taskUri = URI.create("http://localhost:8080/subtasks");
+        HttpClient taskHttpClient = HttpClient.newHttpClient();
+
+        Task subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.NEW, 2, LocalDateTime.now(), 10);
+        Task subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.NEW, 2, LocalDateTime.now().plusMinutes(15), 11);
+        String subtaskJson = gson.toJson(subtask);
+        String subtask2Json2 = gson.toJson(subtask2);
+
+        HttpRequest task1HttpRequest = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(subtaskJson)).build();
+        HttpResponse<String> task1Response = taskHttpClient.send(task1HttpRequest, HttpResponse.BodyHandlers.ofString());
+        HttpRequest task2HttpRequest = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(subtask2Json2)).build();
+        HttpResponse<String> task2Response = taskHttpClient.send(task2HttpRequest, HttpResponse.BodyHandlers.ofString());
+
+        URI delUri = URI.create("http://localhost:8080/subtasks/remove5");
+        HttpRequest subtask1DeleteRequest = HttpRequest.newBuilder().uri(delUri).DELETE().build();
+        HttpResponse<String> response = taskHttpClient.send(subtask1DeleteRequest, HttpResponse.BodyHandlers.ofString());
+        System.out.println(taskManager.getTasks());
+
+        Assertions.assertEquals(500, response.statusCode(), "Статус код не соответствует ожидаемому");
+        Assertions.assertEquals(2, taskManager.getSubtasks().size(), "Кол-во задач не соотвествует ожидаемому");
+        Assertions.assertEquals(Duration.ofMinutes(11), taskManager.getSubtasks().getLast().getDuration(), "Длительность задачи не соотвествует ожидаемому");
     }
 
     @DisplayName("Получение всех задач типа Subtask")

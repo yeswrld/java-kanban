@@ -6,14 +6,14 @@ import com.tasktracker.app.model.Adapters.DurationAdapter;
 import com.tasktracker.app.model.Adapters.LocalDateTimeAdapter;
 import com.tasktracker.app.model.Endpoint;
 import com.tasktracker.app.model.Type;
-import com.tasktracker.app.service.ManagersExep;
+import com.tasktracker.app.service.CustomExeptions.ManagersExep;
+import com.tasktracker.app.service.CustomExeptions.NotFoundExep;
 import com.tasktracker.app.service.TaskManager;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class BaseHandler {
@@ -27,49 +27,89 @@ public class BaseHandler {
     protected Endpoint getEndpoint(String requestPath, String requestMetod) {
         String[] pathParts = requestPath.split("/");
         if (pathParts.length == 2) {
-            if (pathParts[1].equals("tasks") && requestMetod.equals("GET")) {
-                return Endpoint.GETTASKS;
-            } else if (pathParts[1].equals("tasks") && requestMetod.equals("POST")) {
-                return Endpoint.CREATETASK;
-            } else if (pathParts[1].equals("tasks") && requestMetod.equals("DELETE")) {
-                return Endpoint.DELETETASKS;
-            } else if ((pathParts[1].equals("subtasks") && requestMetod.equals("GET"))) {
-                return Endpoint.GETSUBTASKS;
-            } else if ((pathParts[1].equals("subtasks") && requestMetod.equals("POST"))) {
-                return Endpoint.CREATESUBTASK;
-            } else if ((pathParts[1].equals("subtasks") && requestMetod.equals("DELETE"))) {
-                return Endpoint.DELETESUBTASKS;
-            } else if ((pathParts[1].equals("epics") && requestMetod.equals("GET"))) {
-                return Endpoint.GETEPICS;
-            } else if ((pathParts[1].equals("epics") && requestMetod.equals("POST"))) {
-                return Endpoint.CREATEEPIC;
-            } else if ((pathParts[1].equals("epics") && requestMetod.equals("DELETE"))) {
-                return Endpoint.DELETEEPICS;
-            } else if ((pathParts[1].equals("prioritized") && requestMetod.equals("GET"))) {
-                return Endpoint.GETPRIORITYTASKS;
+            switch (requestMetod) {
+                case "GET": {
+                    if (pathParts[1].equals("tasks")) {
+                        return Endpoint.GETTASKS;
+                    }
+                    if (pathParts[1].equals("subtasks")) {
+                        return Endpoint.GETSUBTASKS;
+                    }
+                    if (pathParts[1].equals("epics")) {
+                        return Endpoint.GETEPICS;
+                    }
+                }
+                case "POST": {
+                    if (pathParts[1].equals("tasks")) {
+                        return Endpoint.CREATETASK;
+                    }
+                    if (pathParts[1].equals("subtasks")) {
+                        return Endpoint.CREATESUBTASK;
+                    }
+                    if (pathParts[1].equals("epics")) {
+                        return Endpoint.CREATEEPIC;
+                    }
+                }
+                case "DELETE": {
+                    if (pathParts[1].equals("tasks")) {
+                        return Endpoint.DELETETASKS;
+                    }
+                    if (pathParts[1].equals("subtasks")) {
+                        return Endpoint.DELETESUBTASKS;
+                    }
+                    if (pathParts[1].equals("epics")) {
+                        return Endpoint.DELETEEPICS;
+                    }
+                }
+                case "prioritized": {
+                    return Endpoint.GETPRIORITYTASKS;
+                }
             }
-        } else if (pathParts.length == 3) {
-            if (pathParts[1].equals("tasks") && requestMetod.equals("GET")) {
-                return Endpoint.GETTASKBYID;
-            } else if (pathParts[1].equals("tasks") && requestMetod.equals("DELETE")) {
-                return Endpoint.DELETETASK;
-            } else if (pathParts[1].equals("subtasks") && requestMetod.equals("GET")) {
-                return Endpoint.CREATESUBTASK_ID;
-            } else if (pathParts[1].equals("subtasks") && requestMetod.equals("DELETE")) {
-                return Endpoint.DELETESUBTASK;
-            } else if (pathParts[1].equals("epics") && requestMetod.equals("GET")) {
-                return Endpoint.GETEPIC_ID;
-            } else if (pathParts[1].equals("epics") && requestMetod.equals("DELETE")) {
-                return Endpoint.DELETEEPIC;
+        }
+
+        if (pathParts.length == 3) {
+            switch (requestMetod) {
+                case "GET": {
+                    if (pathParts[1].equals("tasks")) {
+                        return Endpoint.GETTASKBYID;
+                    }
+                    if (pathParts[1].equals("subtasks")) {
+                        return Endpoint.CREATESUBTASK_ID;
+                    }
+                    if (pathParts[1].equals("epics")) {
+                        return Endpoint.GETEPIC_ID;
+                    }
+                }
+
+                case "DELETE": {
+                    if (pathParts[1].equals("tasks")) {
+                        return Endpoint.DELETETASK;
+                    }
+                    if (pathParts[1].equals("subtasks")) {
+                        return Endpoint.DELETESUBTASK;
+                    }
+                    if (pathParts[1].equals("epics")) {
+                        return Endpoint.DELETEEPIC;
+                    }
+                }
             }
-        } else if (pathParts.length == 4 && pathParts[1].equals("epics") && pathParts[3].equals("subtasks") && requestMetod.equals("GET")) {
-            return Endpoint.GETEPICSUBTASKS;
+        }
+        if (pathParts.length == 4 && pathParts[1].equals("epics") && pathParts[3].equals("subtasks")) {
+            switch (requestMetod) {
+                case "GET": {
+                    return Endpoint.GETEPICSUBTASKS;
+                }
+            }
         }
         return Endpoint.UNKNOWN;
     }
 
     protected void getTask(HttpExchange exchange, Type taskType) throws IOException {
-        System.out.println(LocalDate.now() + " Получен запрос - " + exchange.getRequestMethod() + " " + exchange.getRequestURI());
+        String requestInfo = String.format("%s Получен запрос - %s %s",
+                LocalDateTime.now(),
+                exchange.getRequestMethod(),
+                exchange.getRequestURI());
+        System.out.println(requestInfo);
         try {
             String json = switch (taskType) {
                 case EPIC -> gson.toJson(taskManager.getEpics());
@@ -97,7 +137,7 @@ public class BaseHandler {
             System.out.println("Ответ сформирован: " + LocalDateTime.now());
             sendMessage(exchange, json);
             System.out.println("Body " + json);
-        } catch (RuntimeException e) {
+        } catch (NotFoundExep e) {
             System.out.println(e.getMessage());
             sendNotFoundMessage(exchange);
         } catch (Exception e) {
@@ -117,11 +157,11 @@ public class BaseHandler {
             }
             System.out.println("Ответ сформирован: " + LocalDateTime.now());
             sendOkMessage(exchange);
-        } catch (RuntimeException e) {
+        } catch (NotFoundExep e) {
             System.out.println(e.getMessage());
             sendNotFoundMessage(exchange);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             sendErrorMessage(exchange);
         }
     }
@@ -155,7 +195,7 @@ public class BaseHandler {
         try {
             return Integer.parseInt(pathParts[2]);
         } catch (NumberFormatException e) {
-            throw new ManagersExep(LocalDateTime.now() + "Некоректный ID задачи");
+            throw new ManagersExep(LocalDateTime.now() + " Некоректный ID задачи");
         }
     }
 

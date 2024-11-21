@@ -4,6 +4,8 @@ import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.CustomExeptions.InstersectionExep;
+import com.tasktracker.app.service.CustomExeptions.NotFoundExep;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task addTaskM(Task task) {
         if (intersection(task)) {
-            throw new RuntimeException(LocalDateTime.now() + " Задача не может быть создана или обновлена, т.к. пересекается с существующей");
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с именем = " + task.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
         }
         int taskCount = generateCounter();
         task.setId(taskCount);
@@ -56,7 +58,7 @@ public class InMemoryTaskManager implements TaskManager {
         int subTaskCount = generateCounter();
         subtask.setId(subTaskCount);
         if (intersection(subtask)) {
-            throw new RuntimeException(LocalDateTime.now() + " Задача с ИД = " + subtask.getId() + " может быть создана или обновлена, т.к. пересекается с существующей");
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с именем = " + subtask.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
 
         }
         Epic epic = epicM.get(subtask.getEpicId());
@@ -94,7 +96,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             historyManager.add(task);
         } else if (task == null) {
-            throw new RuntimeException("Таск с ИД = " + id + " не найден");
+            throw new NotFoundExep("Таск с ИД = " + id + " не найден");
         }
         return task;
     }
@@ -105,7 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask != null) {
             historyManager.add(subtask);
         } else if (subtask == null) {
-            throw new RuntimeException("Субтаск с ИД = " + id + " не найден");
+            throw new NotFoundExep("Субтаск с ИД = " + id + " не найден");
         }
         return subtask;
     }
@@ -116,7 +118,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             historyManager.add(epic);
         } else if (epic == null) {
-            throw new RuntimeException("Эпик с ИД = " + id + " не найден");
+            throw new NotFoundExep("Эпик с ИД = " + id + " не найден");
         }
         return epic;
     }
@@ -133,7 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTaskOnId(int id) {
         if (taskM.get(id) == null) {
-            throw new RuntimeException(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
         }
         removePriorityTask(taskM.get(id));
         taskM.remove(id);
@@ -142,10 +144,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeSubTaskOnId(int id) {
-        int epicId = subTaskM.get(id).getEpicId();
         if (subTaskM.get(id) == null) {
-            throw new RuntimeException(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
         }
+        int epicId = subTaskM.get(id).getEpicId();
         epicM.get(epicId).deleteEpicSubtask(id);
         removePriorityTask(subTaskM.get(id));
         subTaskM.remove(id);
@@ -154,8 +156,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeEpicOnId(int id) {
+    public void removeEpicOnId(int id) throws Exception {
         final Epic epic = epicM.get(id);
+        if (epic == null) {
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+        }
         historyManager.remove(id);
         epic.getSubtaskIdList().forEach(subtaskId -> {
             prioritizedTasks.remove(subtaskId);
@@ -181,7 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask updateSubstask(Subtask subtask) {
         if (intersection(subtask)) {
-            return null;
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с названием = " + subtask.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
         }
         if (subtask != null && subTaskM.containsKey(subtask.getId())) {
             subTaskM.put(subtask.getId(), subtask);
@@ -196,7 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task task) {
         if (intersection(task)) {
-            throw new RuntimeException(LocalDateTime.now() + " Задача не может быть создана или обновлена, т.к. пересекается с существующей");
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с названием = " + task.getName() + " не может быть обновлена, т.к. пересекается с существующей");
         }
         if (task != null && taskM.containsKey(task.getId())) {
             int id = task.getId();

@@ -131,7 +131,31 @@ public class InMemoryTaskManagerTasksTest {
         HttpRequest request = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(json)).build();
         HttpResponse<String> response = taskHttpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(400, response.statusCode(), "Статус код неккоректного запроса не прошёл");
+    }
 
+    @DisplayName("Тест sendErrorRequestTest - 500")
+    @Test
+    public void sendErrorRequestTest() throws IOException, InterruptedException {
+        URI taskUri = URI.create("http://localhost:8080/tasks");
+        HttpClient taskHttpClient = HttpClient.newHttpClient();
+
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW, LocalDateTime.now(), 10);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.NEW, LocalDateTime.now().plusMinutes(15), 11);
+        String task1Json = gson.toJson(task1);
+        String task2Json2 = gson.toJson(task2);
+
+        HttpRequest task1HttpRequest = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(task1Json)).build();
+        HttpResponse<String> task1Response = taskHttpClient.send(task1HttpRequest, HttpResponse.BodyHandlers.ofString());
+        HttpRequest task2HttpRequest = HttpRequest.newBuilder().uri(taskUri).POST(HttpRequest.BodyPublishers.ofString(task2Json2)).build();
+        HttpResponse<String> task2Response = taskHttpClient.send(task2HttpRequest, HttpResponse.BodyHandlers.ofString());
+
+        URI delUri = URI.create("http://localhost:8080/tasks/delete4");
+        HttpRequest task1DeleteRequest = HttpRequest.newBuilder().uri(delUri).DELETE().build();
+        HttpResponse<String> response = taskHttpClient.send(task1DeleteRequest, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(500, response.statusCode(), "Статус код не соответствует ожидаемому");
+        Assertions.assertEquals(2, taskManager.getTasks().size(), "Кол-во задач не соотвествует ожидаемому");
+        Assertions.assertEquals("Задача 2", taskManager.getTasks().getLast().getName(), "Название задачи не соотвествует ожидаемому");
     }
 
     @DisplayName("Получение всех задач типа Task")
