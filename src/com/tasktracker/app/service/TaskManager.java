@@ -34,9 +34,9 @@ public interface TaskManager {
 
     void removeSubTaskOnId(int id);
 
-    void removeEpicOnId(int id);
+    void removeEpicOnId(int id) throws Exception;
 
-    void updateEpic(Epic epic);
+    Epic updateEpic(Epic epic);
 
     Subtask updateSubstask(Subtask subtask);
 

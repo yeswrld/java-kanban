@@ -10,7 +10,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @DisplayName("Проверка FileBackedTaskManagerTest")
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
@@ -37,8 +39,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         Task task5 = new Task("Задача 5", "Описание задачи 5", Status.IN_PROGRESS);
         Task task6 = new Task("Задача 6", "Описание задачи 6", Status.DONE);
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.NEW, 2, LocalDateTime.now(), null);
-        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), null);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", Status.NEW, 2, LocalDateTime.now(), 0);
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Status.DONE, 2, LocalDateTime.now(), 0);
         fileBackedManager.addEpicM(epic1);
         subtask1.setDuration(Duration.ofHours(1));
         subtask1.setStartTime(LocalDateTime.of(2025, 01, 01, 11, 00));
@@ -56,10 +58,10 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         fileBackedManager.addTaskM(task6);
         fileBackedManager.getPrioritizedTasks().forEach(System.out::println);
         FileBackedTaskManager loadFromFile = FileBackedTaskManager.load(Managers.getDefaultHistory(), fileData);
-        Assertions.assertTrue(loadFromFile.getTasks().equals(fileBackedManager.getTasks()));
-        Assertions.assertTrue(loadFromFile.getEpics().equals(fileBackedManager.getEpics()));
-        Assertions.assertTrue(loadFromFile.getSubtasks().equals(fileBackedManager.getSubtasks()));
-        Assertions.assertTrue(loadFromFile.getTasks().equals(fileBackedManager.getTasks()));
+        Assertions.assertEquals(loadFromFile.getTasks(), fileBackedManager.getTasks());
+        Assertions.assertEquals(loadFromFile.getEpics(), fileBackedManager.getEpics());
+        Assertions.assertEquals(loadFromFile.getSubtasks(), fileBackedManager.getSubtasks());
+        Assertions.assertEquals(loadFromFile.getTasks(), fileBackedManager.getTasks());
 
 
     }
@@ -96,7 +98,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
             throw new RuntimeException(e);
         }
         Assertions.assertEquals(linesList.get(0), "id,type,name,status,description,epic, startTime, duration\n");
-        Assertions.assertTrue(linesList.size() == 1);
+        Assertions.assertEquals(1, linesList.size());
     }
 
     @DisplayName("Загрузка из файла")

@@ -19,37 +19,45 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(String name, String description, Status status, LocalDateTime startTime, int duration) {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.id = id;
-        this.startTime = null;
-        this.duration = null;
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
     }
+
+    public Task(String name, String description, LocalDateTime startTime, int duration) {
+
+    }
+
 
     public Type getType() {
         return Type.TASK;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getDescription() {
@@ -58,10 +66,6 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public Duration getDuration() {

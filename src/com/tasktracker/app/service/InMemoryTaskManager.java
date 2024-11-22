@@ -4,19 +4,22 @@ import com.tasktracker.app.model.Epic;
 import com.tasktracker.app.model.Status;
 import com.tasktracker.app.model.Subtask;
 import com.tasktracker.app.model.Task;
+import com.tasktracker.app.service.CustomExeptions.InstersectionExep;
+import com.tasktracker.app.service.CustomExeptions.NotFoundExep;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int counter = 1;
     protected final Map<Integer, Task> taskM = new HashMap<>();
     protected final Map<Integer, Epic> epicM = new HashMap<>();
     protected final Map<Integer, Subtask> subTaskM = new HashMap<>();
-    private final HistoryManager historyManager;
     protected final TreeSet<Task> prioritizedTasks;
+    private final HistoryManager historyManager;
+    protected int counter = 1;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -32,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task addTaskM(Task task) {
         if (intersection(task)) {
-            return null;
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с именем = " + task.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
         }
         int taskCount = generateCounter();
         task.setId(taskCount);
@@ -51,11 +54,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask addSubTaskM(Subtask subtask) {
-        if (intersection(subtask)) {
-            return null;
-        }
+
         int subTaskCount = generateCounter();
         subtask.setId(subTaskCount);
+        if (intersection(subtask)) {
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с именем = " + subtask.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
+
+        }
         Epic epic = epicM.get(subtask.getEpicId());
         updatePriorityTasks(subtask);
         if (epic != null) {
@@ -90,6 +95,8 @@ public class InMemoryTaskManager implements TaskManager {
         final Task task = taskM.get(id);
         if (task != null) {
             historyManager.add(task);
+        } else if (task == null) {
+            throw new NotFoundExep("Таск с ИД = " + id + " не найден");
         }
         return task;
     }
@@ -99,6 +106,8 @@ public class InMemoryTaskManager implements TaskManager {
         final Subtask subtask = subTaskM.get(id);
         if (subtask != null) {
             historyManager.add(subtask);
+        } else if (subtask == null) {
+            throw new NotFoundExep("Субтаск с ИД = " + id + " не найден");
         }
         return subtask;
     }
@@ -108,6 +117,8 @@ public class InMemoryTaskManager implements TaskManager {
         final Epic epic = epicM.get(id);
         if (epic != null) {
             historyManager.add(epic);
+        } else if (epic == null) {
+            throw new NotFoundExep("Эпик с ИД = " + id + " не найден");
         }
         return epic;
     }
@@ -123,6 +134,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTaskOnId(int id) {
+        if (taskM.get(id) == null) {
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+        }
         removePriorityTask(taskM.get(id));
         taskM.remove(id);
         historyManager.remove(id);
@@ -130,6 +144,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeSubTaskOnId(int id) {
+        if (subTaskM.get(id) == null) {
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+        }
         int epicId = subTaskM.get(id).getEpicId();
         epicM.get(epicId).deleteEpicSubtask(id);
         removePriorityTask(subTaskM.get(id));
@@ -139,8 +156,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeEpicOnId(int id) {
+    public void removeEpicOnId(int id) throws Exception {
         final Epic epic = epicM.get(id);
+        if (epic == null) {
+            throw new NotFoundExep(LocalDateTime.now() + " Задача не может быть удалена, т.к. задача с ИД = " + id + " не найдена");
+        }
         historyManager.remove(id);
         epic.getSubtaskIdList().forEach(subtaskId -> {
             prioritizedTasks.remove(subtaskId);
@@ -154,18 +174,19 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     @Override
-    public void updateEpic(Epic epic) {
+    public Epic updateEpic(Epic epic) {
         if (epic != null && epicM.containsKey(epic.getId())) {
             Epic savedEpic = epicM.get(epic.getId());
             savedEpic.setName(epic.getName());
             savedEpic.setDescription(epic.getDescription());
         }
+        return epic;
     }
 
     @Override
     public Subtask updateSubstask(Subtask subtask) {
         if (intersection(subtask)) {
-            return null;
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с названием = " + subtask.getName() + " не может быть создана или обновлена, т.к. пересекается с существующей");
         }
         if (subtask != null && subTaskM.containsKey(subtask.getId())) {
             subTaskM.put(subtask.getId(), subtask);
@@ -180,7 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task task) {
         if (intersection(task)) {
-            return null;
+            throw new InstersectionExep(LocalDateTime.now() + " Задача с названием = " + task.getName() + " не может быть обновлена, т.к. пересекается с существующей");
         }
         if (task != null && taskM.containsKey(task.getId())) {
             int id = task.getId();
@@ -194,7 +215,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubtasks() {
         subTaskM.keySet().stream()
                 .forEach(subtaskForDelete -> {
-                    prioritizedTasks.remove(subtaskForDelete);
+                    removePriorityTask(subTaskM.get(subtaskForDelete));
                     historyManager.remove(subtaskForDelete);
                 });
         subTaskM.clear();
