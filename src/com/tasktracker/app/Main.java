@@ -14,5 +14,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println("HELLO");
     }
 }
